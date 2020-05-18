@@ -20,7 +20,7 @@ d = resp.json()[0]
 """
 
 #Establish SQL connection
-DATA_DIR = 'C:/Users/dude0/Desktop/ESPN_API'
+DATA_DIR = '' #Insert local directory path for sqlite database
 conn = sqlite3.connect(path.join(DATA_DIR, 'fantasy.sqlite'))
 
 #Create table of team name and ids
@@ -47,14 +47,16 @@ d = resp.json()[0]
     Useful: schedule, teams[index]['roster']['entries']
 """
 
+#From schedule retrive desired columns
 df = [[
    game['matchupPeriodId'],
    game['home']['teamId'], game['home']['totalPoints'],
-   game['away']['teamId'], game['away']['totalPoints']
+   game['away']['teamId'], game['away']['totalPoints'], game['winner']
    ] for game in d['schedule'] if 'away' in game.keys()]
 
-df = pd.DataFrame(df, columns=['Week', 'Team1', 'Score1', 'Team2', 'Score2'])
-df['Type'] = ['Regudlar' if w<=14 else 'Playoff' for w in df['Week']]
+#Set as DataFrame, and add matchup type to filter for playoffs
+df = pd.DataFrame(df, columns=['Week', 'Team1', 'Score1', 'Team2', 'Score2', 'Winner'])
+df['Type'] = ['Regular' if w<=14 else 'Playoff' for w in df['Week']]
 
 df.to_sql('matchups', conn, index = False, if_exists = 'replace')
 

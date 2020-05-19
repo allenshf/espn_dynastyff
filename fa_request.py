@@ -2,6 +2,12 @@
 #Use command: pip insatall espi_api
 from espn_api.football import League
 import pandas as pd
+import sqlite3
+from os import path
+
+#Establish SQL connection
+DATA_DIR = '' #Insert local directory path for sqlite database
+conn = sqlite3.connect(path.join(DATA_DIR, 'freeagent.sqlite'))
 
 #Request league info from API
 league = League(league_id = 331933, year = 2020)
@@ -16,3 +22,5 @@ fa_info = [[fa.index(player) + 1, player.name, player.proTeam, player.position,
 #Turn list into table
 fa_df = pd.DataFrame(fa_info, columns = ['Rank', 'Name', 'Team', 'Position', 'Projected Points', 'Points'])
 fa_df = fa_df.set_index('Rank')
+
+fa_df.to_sql('free_agents', conn, index = False, if_exists = 'replace')

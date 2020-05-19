@@ -10,7 +10,7 @@ league = League(league_id = 331933, year = 2020)
 fa = league.free_agents(size=150)
 
 #Create list of what info we want
-fa_info = [[fa.index(player), player.name, player.proTeam, player.position,
+fa_info = [[fa.index(player) + 1, player.name, player.proTeam, player.position,
            player.projected_points, player.points] for player in fa]
 
 #Turn list into table

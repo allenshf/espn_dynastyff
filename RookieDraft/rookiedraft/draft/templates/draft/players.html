@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            table, th, td{
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 10px;
+            }
+        </style>
+        <title>
+            List of Free Agents
+        </title>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Team</th>
+                <th>Position</th>
+                <th>2020 Projection</th>
+                <th>2019 Points</th>
+            </tr>
+        {%for player in players%}
+            <tr>
+                <td>{{player.rank}}</td>
+                <td>{{player.name}}</td>
+                <td>{{player.team}}</td>
+                <td>{{player.position}}</td>
+                <td>{{player.projection}}</td>
+                <td>{{player.points}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </body>
+
+</html>

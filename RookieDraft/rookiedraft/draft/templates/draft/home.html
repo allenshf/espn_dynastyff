@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Generate Free Agents
+        </title>
+    </head>
+    <body>
+    <form action="/fa/" method="post">
+            {%csrf_token %}
+        League ID
+        <input type="text" name="param" required> <br><br>
+        <input type="submit" value="Get Free Agents"> <br><br>
+        
+    </form>
+    </body>
+
+</html>

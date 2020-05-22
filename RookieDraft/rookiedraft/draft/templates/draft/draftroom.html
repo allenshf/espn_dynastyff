@@ -1,6 +1,18 @@
-{% extends "draft/base.html" %}
-{% block content%}
-    <div class="container">
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            table, th, td{
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 10px;
+            }
+        </style>
+        <title>
+            List of Free Agents
+        </title>
+    </head>
+    <body>
         <table>
             <tr>
                 <th>Rank</th>
@@ -21,5 +33,6 @@
             </tr>
         {% endfor %}
         </table>
-        </div>
-{% endblock content %}
+    </body>
+
+</html>

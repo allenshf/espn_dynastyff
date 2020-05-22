@@ -1,18 +1,14 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>
-            Generate Free Agents
-        </title>
-    </head>
-    <body>
+{% extends "draft/base.html" %}
+{% block content%}
     <form action="/fa/" method="post">
-            {%csrf_token %}
-        League ID
+        {%csrf_token %}
+        League ID:
         <input type="text" name="param" required> <br><br>
+        # of Teams:
+        <input type="number" name="numTeams"> <br><br>
+        # of Rounds:
+        <input type="number" name="numRounds"> <br><br>
         <input type="submit" value="Get Free Agents"> <br><br>
-        
+                
     </form>
-    </body>
-
-</html>
+{% endblock content %}

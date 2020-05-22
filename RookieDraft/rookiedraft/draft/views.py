@@ -12,8 +12,10 @@ def home(request):
 
 def external(request):
     inp = request.POST.get('param')
+    rounds = request.POST.get('numRounds')
+    teams = request.POST.get('numTeams')
     out=run([sys.executable, 'C:\\Users\\dude0\\Desktop\\RookieDraft\\fa_request.py', inp], shell=False, stdout=PIPE)
-    
+
     DATA_DIR = 'C:/Users/dude0/Desktop/RookieDraft/rookiedraft' #Insert local directory path for sqlite database
     conn = sqlite3.connect(path.join(DATA_DIR, 'freeagent.sqlite'))
     cursor = conn.cursor()

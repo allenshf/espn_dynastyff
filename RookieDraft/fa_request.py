@@ -17,13 +17,17 @@ league = League(league_id = leagueID, year = 2020)
 #Collect list of top free agents
 fa = league.free_agents(size=150)
 
-#Create list of what info we want
+#Create list of what player info we want
 fa_info = [[fa.index(player) + 1, player.name, player.proTeam, player.position,
-           player.projected_points, player.points] for player in fa]
+           player.projected_points, player.points, False] for player in fa]
+
+
+#Create list of all owners
+teams = [team.team_name for team in league.teams]
 
 #Turn list into table
-fa_df = pd.DataFrame(fa_info, columns = ['Rank', 'Name', 'Team', 'Position', 'Projected_Points', 'Points'])
+fa_df = pd.DataFrame(fa_info, columns = ['Rank', 'Name', 'Team', 'Position', 'Projected_Points', 'Points', 'Drafted'])
+team_df = pd.DataFrame(teams, columns = ['Name'])
 
 fa_df.to_sql('free_agents', conn, index = False, if_exists = 'replace')
-
-print(fa_info)
+team_df.to_sql('teams', conn, index=False, if_exists='replace')

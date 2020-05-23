@@ -12,15 +12,26 @@ import pandas as pd
 
 
 def home(request):
-    return render(request, 'draft/home.html')
+    form = LeagueRegisterForm()
+    return render(request, 'draft/home.html', {'form': form})
 
 def draft(request):
-   
-    league_id = request.POST.get('param')
-    num_rounds = request.POST.get('numRounds')
-    num_teams = request.POST.get('numTeams')
 
-    leagueID = int(league_id)
+    form = LeagueRegisterForm(request.POST)
+    if form.is_valid():
+        try:
+            League.objects.get(leagueId=leagueID).delete()
+        except League.DoesNotExist:
+            print('No league yet')
+        form.save()
+    else:
+        messages.error(request, 'Incorrect information entered')
+        return redirect('draft-home')
+
+    leagueID = form.cleaned_data['leagueId']
+    num_rounds = form.cleaned_data['rounds']
+    num_teams = form.cleaned_data['teams']
+
     league = League_espn(league_id = leagueID, year = 2020)
 
     #Collect list of top free agents
@@ -33,12 +44,7 @@ def draft(request):
     #Create list of all owners
     teams = [team.team_name for team in league.teams]
 
-    #Put in Django database
-    try:
-        League.objects.get(leagueId=leagueID).delete()
-    except League.DoesNotExist:
-        print('No league yet')
-    League.objects.create(leagueId=leagueID, teams=num_teams,rounds=num_rounds)
+    #Get league from Django database
     league_mod = League.objects.get(leagueId=leagueID)
 
     for player in fa:

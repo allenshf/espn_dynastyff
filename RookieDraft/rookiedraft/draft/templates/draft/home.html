@@ -1,16 +1,19 @@
 {% extends "draft/base.html" %}
+{% load crispy_forms_tags %}
 {% block content%}
-
-    <form method="post">
-        {%csrf_token %}
-        League ID:
-        <input type="text" name="param" required> <br><br>
-        # of Teams:
-        <input type="number" name="numTeams" value=10> <br><br>
-        # of Rounds:
-        <input type="number" name="numRounds" value=4> <br><br>
-        <input type="submit" value="Register League" formaction="/draft/"> 
-        <input type="submit" value="Draft Room" formaction="/draft/"><br><br>
-                
-    </form>
+    <div class="content-section">
+        <form method="post">
+            {%csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Register League</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit" formaction="/draft/">Register League</button> 
+                <button class="btn btn-outline-info" type="submit" formaction="/draft/">Draft Room</button>
+            </div>
+            
+                    
+        </form>
+    </div>
 {% endblock content %}

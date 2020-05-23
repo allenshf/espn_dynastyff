@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 # Create your models here.
 class League(models.Model):
     leagueId = models.IntegerField()
-    teams = models.IntegerField()
-    rounds = models.IntegerField()
+    teams = models.IntegerField(default=10)
+    rounds = models.IntegerField(default=4)
 
     def __str__(self):
         return 'League ' + str(self.leagueId)

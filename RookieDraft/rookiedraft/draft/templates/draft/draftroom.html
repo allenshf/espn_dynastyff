@@ -31,19 +31,18 @@
                 <th class="ranking">2019 Points</th>
             </tr>
         {%for player in players%}
-            <tr class="ranking">
-                <td class="ranking">{{player.rank}}</td>
-                <td class="ranking">{{player.name}}</td>
-                <td class="ranking">{{player.team}}</td>
-                <td class="ranking">{{player.position}}</td>
-                <td class="ranking">{{player.projection}}</td>
-                <td class="ranking">{{player.points}}</td>
-                {% if not player.drafted%}
+            {% if not player.drafted %}
+                <tr class="ranking">
+                    <td class="ranking">{{player.rank}}</td>
+                    <td class="ranking">{{player.name}}</td>
+                    <td class="ranking">{{player.team}}</td>
+                    <td class="ranking">{{player.position}}</td>
+                    <td class="ranking">{{player.projection}}</td>
+                    <td class="ranking">{{player.points}}</td>
                     <td><button type="button"> Draft</button></td>
-                {% else %}
-                    <td></td>
-                {% endif %}
-            </tr>
+                
+                </tr>
+            {% endif %}
         {% endfor %}
         </table>
         </div>

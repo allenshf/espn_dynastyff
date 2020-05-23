@@ -5,6 +5,8 @@ import sys
 import sqlite3
 from os import path
 from .models import Pick, Player, League, Team
+from espn_api.football import League as League_espn
+import pandas as pd
 
 
 def home(request):
@@ -12,59 +14,41 @@ def home(request):
 
 def draft(request):
    
-    inp = request.POST.get('param')
-    num_rounds = int(request.POST.get('numRounds'))
-    num_teams = int(request.POST.get('numTeams'))
-    
-    out=run([sys.executable, 'C:\\Users\\dude0\\Desktop\\RookieDraft\\fa_request.py', inp], shell=False, stdout=PIPE)
-    DATA_DIR = 'C:/Users/dude0/Desktop/RookieDraft/rookiedraft' #Insert local directory path for sqlite database
-    conn = sqlite3.connect(path.join(DATA_DIR, 'freeagent.sqlite'))
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM free_agents')
-    result = cursor.fetchall()
-    cursor.execute('SELECT * FROM teams')
-    teams = cursor.fetchall()
+    league_id = request.POST.get('param')
+    num_rounds = request.POST.get('numRounds')
+    num_teams = request.POST.get('numTeams')
 
-    teams = [team[0] for team in teams]
+    leagueID = int(league_id)
+    league = League_espn(league_id = leagueID, year = 2020)
 
-    fa_dict = [
-    {
-        'rank': player[0],
-        'name': player[1],
-        'team': player[2],
-        'position': player[3],
-        'projection': player[4],
-        'points': player[5],
-        'drafted': player[6]
-    } for player in result]
+    #Collect list of top free agents
+    fa = league.free_agents(size=150)
 
+    #Create list of what player info we want
+    fa_info = [[fa.index(player) + 1, player.name, player.proTeam, player.position,
+            player.projected_points, player.points, False] for player in fa]
+
+    #Create list of all owners
+    teams = [team.team_name for team in league.teams]
+
+    #Put in Django database
     try:
-        League.objects.get(leagueId=inp).delete()
+        League.objects.get(leagueId=leagueID).delete()
     except League.DoesNotExist:
         print('No league yet')
-    League.objects.create(leagueId=inp, teams=num_teams,rounds=num_rounds)
-    league = League.objects.get(leagueId=inp)
+    League.objects.create(leagueId=leagueID, teams=num_teams,rounds=num_rounds)
+    league_mod = League.objects.get(leagueId=leagueID)
 
-    for player in fa_dict:
-        player_mod = Player(rank=player['rank'],name=player['name'],team=player['team'],
-        position=player['position'],projection=player['projection'],points=player['points'],drafted=False)
-        player_mod.save()
-        league.players.add(player_mod)
+    for player in fa:
+            player_mod = Player(rank=fa.index(player)+1,name=player.name,team=player.proTeam,
+            position=player.position,projection=player.projected_points,points=player.points,drafted=False, league=league_mod)
+            player_mod.save()
 
     for team in teams:
-        team_mod = Team(name=team)
+        team_mod = Team(name=team, league=league_mod)
         team_mod.save()
-        league.users.add(team_mod)
 
-
-    return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(num_rounds), 'teams':range(num_teams), 'names':teams})
-
-def access(request, id):
-
-    league = League.objects.get(leagueId=id)
-    rounds = league.rounds
-    teams = league.teams
-    players = league.players.all()
+    players = league_mod.player_set.all()
 
     fa_dict = [
     {
@@ -77,6 +61,28 @@ def access(request, id):
         'drafted':player.drafted
     } for player in players]
 
-    users = [team.name for team in league.users.all()]
+    users = [team.name for team in league_mod.team_set.all()]
+
+    return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(int(num_rounds)), 'teams':range(int(num_teams)), 'names':users})
+
+def access(request, id):
+
+    league = League.objects.get(leagueId=id)
+    rounds = league.rounds
+    teams = league.teams
+    players = league.player_set.all()
+
+    fa_dict = [
+    {
+        'rank': player.rank,
+        'name': player.name,
+        'team': player.team,
+        'position': player.position,
+        'projection': player.projection,
+        'points': player.points,
+        'drafted':player.drafted
+    } for player in players]
+
+    users = [team.name for team in league.team_set.all()]
 
     return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(rounds), 'teams':range(teams),'names':users})

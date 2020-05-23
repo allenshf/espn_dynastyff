@@ -1,10 +1,12 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 import requests
 from subprocess import run,PIPE
 import sys
 import sqlite3
 from os import path
 from .models import Pick, Player, League, Team
+from .forms import LeagueRegisterForm
 from espn_api.football import League as League_espn
 import pandas as pd
 
@@ -65,6 +67,7 @@ def draft(request):
 
     return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(int(num_rounds)), 'teams':range(int(num_teams)), 'names':users})
 
+@login_required
 def access(request, id):
 
     league = League.objects.get(leagueId=id)

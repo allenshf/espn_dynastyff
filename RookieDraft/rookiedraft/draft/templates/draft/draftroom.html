@@ -1,38 +1,50 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <style>
-            table, th, td{
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 10px;
-            }
-        </style>
-        <title>
-            List of Free Agents
-        </title>
-    </head>
-    <body>
+{% extends "draft/base.html" %}
+{% block content%}
+    <div class="container">
+
         <table>
             <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>Team</th>
-                <th>Position</th>
-                <th>2020 Projection</th>
-                <th>2019 Points</th>
+            {% for x in teams%}
+                <th><select>
+                    {% for name in names %} 
+                       <option>{{name}}</option>
+                    {% endfor %}
+                </select></th>
+            {% endfor %}
+            </tr>
+            {% for x in rounds%}
+                <tr>
+                    {% for y in teams%}
+                    <td class="pick">  </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table> <br><br>
+
+        <table class="ranking">
+            <tr class="ranking">
+                <th class="ranking">Rank</th>
+                <th class="ranking">Name</th>
+                <th class="ranking">Team</th>
+                <th class="ranking">Position</th>
+                <th class="ranking">2020 Projection</th>
+                <th class="ranking">2019 Points</th>
             </tr>
         {%for player in players%}
-            <tr>
-                <td>{{player.rank}}</td>
-                <td>{{player.name}}</td>
-                <td>{{player.team}}</td>
-                <td>{{player.position}}</td>
-                <td>{{player.projection}}</td>
-                <td>{{player.points}}</td>
+            <tr class="ranking">
+                <td class="ranking">{{player.rank}}</td>
+                <td class="ranking">{{player.name}}</td>
+                <td class="ranking">{{player.team}}</td>
+                <td class="ranking">{{player.position}}</td>
+                <td class="ranking">{{player.projection}}</td>
+                <td class="ranking">{{player.points}}</td>
+                {% if not player.drafted%}
+                    <td><button type="button"> Draft</button></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
             </tr>
         {% endfor %}
         </table>
-    </body>
-
-</html>
+        </div>
+{% endblock content %}

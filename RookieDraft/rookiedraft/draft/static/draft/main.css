@@ -7,16 +7,35 @@ body {
   h1, h2, h3, h4, h5, h6 {
     color: #444444;
   }
-  
-  table, th, td{
+
+  th{
+    text-align: center;
+  }
+
+  select{
+    width:100px;
+  }
+
+  .ranking{
     border: 1px solid black;
     border-collapse: collapse;
     padding: 10px;
     }
+    
   ul {
     margin: 0;
   }
   
+  .pick{
+    width: 100px;
+    height: 60px;
+    padding: 10px;
+    border: 1px solid white;
+
+    background: #C4C4C4;
+    border-radius: 10px;
+  }
+
   .ff-green {
     background-color: #39b54a;
   }

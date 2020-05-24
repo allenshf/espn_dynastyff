@@ -2,11 +2,12 @@ from django import forms
 from django.forms import ModelForm
 from .models import League
 
+#League Registration Form, asks for ID, # of teams, # of rounds
 class LeagueRegisterForm(ModelForm):
 
     class Meta:
         model = League
-        exclude = ('user',)
+        exclude = ('user','draft_order','curr_round','curr_pick',)
         fields = ['leagueId', 'teams', 'rounds']
         labels = {'leagueId': "League ID", 'teams': "# of Teams", 'rounds': "# of rounds"}
         

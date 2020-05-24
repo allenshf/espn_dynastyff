@@ -26,6 +26,13 @@ def draft(request):
     form = LeagueRegisterForm(request.user, request.POST)
     leagueID = request.POST.get('leagueId')
 
+    #Call ESPN API
+    try:
+        league = League_espn(league_id = leagueID, year = 2020)
+    except Exception:
+        messages.warning(request, 'No Such League with this ID')
+        return redirect('draft-home')
+        
     #Get current user
     user = request.user
 
@@ -49,8 +56,7 @@ def draft(request):
     num_rounds = form.cleaned_data['rounds']
     num_teams = form.cleaned_data['teams']
 
-    #Call ESPN API
-    league = League_espn(league_id = leagueID, year = 2020)
+   
 
     #Collect list of top free agents
     fa = league.free_agents(size=150)
@@ -140,7 +146,7 @@ def find(request):
 def leaguelist(request, id):
     #Find all leagues with searched ID
     leagues = League.objects.all().filter(leagueId=id)
-    return render(request, 'draft/list.html', {'leagues': leagues})
+    return render(request, 'draft/list.html', {'leagues': leagues, 'id': id})
 
 @login_required
 def saveorder(request, id):

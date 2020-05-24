@@ -7,6 +7,7 @@ class League(models.Model):
     leagueId = models.IntegerField()
     teams = models.IntegerField(default=10)
     rounds = models.IntegerField(default=4)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return 'League ' + str(self.leagueId)

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 import requests
 from subprocess import run,PIPE
 import sys
@@ -13,22 +14,33 @@ import pandas as pd
 
 
 def home(request):
-    form = LeagueRegisterForm()
+
+    form = LeagueRegisterForm(request.user)
     return render(request, 'draft/home.html', {'form': form})
 
+
+@login_required
 def draft(request):
 
-    form = LeagueRegisterForm(request.POST)
+    form = LeagueRegisterForm(request.user, request.POST)
     leagueID = request.POST.get('leagueId')
+
+    user = request.user
+
     if form.is_valid():
         try:
-            League.objects.get(leagueId=leagueID).delete()
+            League.objects.get(leagueId=leagueID, user=user).delete()
         except League.DoesNotExist:
-            print('No league yet')
-        form.save()
+            pass
+        temp = form.save(commit=False)
+        temp.user = request.user
+        temp.save()
     else:
         messages.warning(request, 'Incorrect information entered')
         return redirect('draft-home')
+
+    #Get league from Django database
+    league_mod = League.objects.get(leagueId=leagueID, user=user)
 
     num_rounds = form.cleaned_data['rounds']
     num_teams = form.cleaned_data['teams']
@@ -45,9 +57,6 @@ def draft(request):
     #Create list of all owners
     teams = [team.team_name for team in league.teams]
 
-    #Get league from Django database
-    league_mod = League.objects.get(leagueId=leagueID)
-
     for player in fa:
             player_mod = Player(rank=fa.index(player)+1,name=player.name,team=player.proTeam,
             position=player.position,projection=player.projected_points,points=player.points,drafted=False, league=league_mod)
@@ -62,7 +71,11 @@ def draft(request):
 @login_required
 def access(request, id):
 
-    league = League.objects.get(leagueId=id)
+    try:
+        league = League.objects.get(leagueId=id, user=request.user)
+    except League.DoesNotExist:
+        messages.warning(request, 'You do not own a league with this ID')
+        return redirect('draft-home')
     rounds = league.rounds
     teams = league.teams
     players = league.player_set.all()
@@ -82,18 +95,20 @@ def access(request, id):
 
     return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(rounds), 'teams':range(teams),'names':users})
 
+@login_required
 def find(request):
 
     leagueId = request.POST.get('leagueId')
     try:
-        league = League.objects.get(leagueId=int(leagueId))
+        league = League.objects.get(leagueId=int(leagueId), user=request.user)
     except ValueError:
         messages.warning(request, 'Invalid Value Entered')
         next = request.POST.get('next','/')
         return redirect(next)
     except League.DoesNotExist:
-        messages.warning(request, 'League Does Not Exists')
+        messages.warning(request, 'You do not own a league with this ID')
         next = request.POST.get('next','/')
         return redirect(next)
 
     return redirect('/draft/' + str(leagueId))
+

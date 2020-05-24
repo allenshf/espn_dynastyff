@@ -39,6 +39,12 @@ body {
   .ff-green {
     background-color: #39b54a;
   }
+
+  .nav{
+    margin: 1px;
+    background-color: #39b54a;
+    border: none;
+  }
   
   .site-header .navbar-nav .nav-link {
     color: #cbd5db;

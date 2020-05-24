@@ -26,8 +26,13 @@
                 <div class="collapse navbar-collapse" id="navbarToggle">
                   <div class="navbar-nav mr-auto">
                     <a class="nav-item nav-link" href="{% url 'draft-home' %}">Home</a>
-                    <a class="nav-item nav-link" href="{% url 'draft-room' %}">Draft</a>
-                  </div>
+                      <form method="POST" class="input-group" novalidate>
+                        {%csrf_token %}
+                        <input type="text" required placeholder="League ID" name="leagueId" value="">
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="nav-item nav-link nav" formaction="/league/">Find League</button>
+                      </form>
+                    </div>
                   <!-- Navbar Right Side -->
                   <div class="navbar-nav">
                     {% if user.is_authenticated %}

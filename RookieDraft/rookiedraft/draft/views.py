@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import requests
 from subprocess import run,PIPE
@@ -18,6 +19,7 @@ def home(request):
 def draft(request):
 
     form = LeagueRegisterForm(request.POST)
+    leagueID = request.POST.get('leagueId')
     if form.is_valid():
         try:
             League.objects.get(leagueId=leagueID).delete()
@@ -25,10 +27,9 @@ def draft(request):
             print('No league yet')
         form.save()
     else:
-        messages.error(request, 'Incorrect information entered')
+        messages.warning(request, 'Incorrect information entered')
         return redirect('draft-home')
 
-    leagueID = form.cleaned_data['leagueId']
     num_rounds = form.cleaned_data['rounds']
     num_teams = form.cleaned_data['teams']
 
@@ -56,22 +57,7 @@ def draft(request):
         team_mod = Team(name=team, league=league_mod)
         team_mod.save()
 
-    players = league_mod.player_set.all()
-
-    fa_dict = [
-    {
-        'rank': player.rank,
-        'name': player.name,
-        'team': player.team,
-        'position': player.position,
-        'projection': player.projection,
-        'points': player.points,
-        'drafted':player.drafted
-    } for player in players]
-
-    users = [team.name for team in league_mod.team_set.all()]
-
-    return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(int(num_rounds)), 'teams':range(int(num_teams)), 'names':users})
+    return redirect('/draft/' + str(leagueID))
 
 @login_required
 def access(request, id):
@@ -95,3 +81,19 @@ def access(request, id):
     users = [team.name for team in league.team_set.all()]
 
     return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(rounds), 'teams':range(teams),'names':users})
+
+def find(request):
+
+    leagueId = request.POST.get('leagueId')
+    try:
+        league = League.objects.get(leagueId=int(leagueId))
+    except ValueError:
+        messages.warning(request, 'Invalid Value Entered')
+        next = request.POST.get('next','/')
+        return redirect(next)
+    except League.DoesNotExist:
+        messages.warning(request, 'League Does Not Exists')
+        next = request.POST.get('next','/')
+        return redirect(next)
+
+    return redirect('/draft/' + str(leagueId))

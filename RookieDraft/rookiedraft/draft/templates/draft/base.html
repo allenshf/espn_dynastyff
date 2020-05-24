@@ -10,13 +10,14 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         
         <link rel="stylesheet" type="text/css" href="{% static 'draft/main.css' %}">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <title>
             ESPN Rookie/FA Draft App
         </title>
     </head>
     <body>
         <header class="site-header">
+            <!--Navbar-->
             <nav class="navbar navbar-expand-md navbar-dark ff-green fixed-top">
               <div class="container">
                 <a class="navbar-brand mr-4" href="/">ESPN Rookie Draft</a>
@@ -26,12 +27,24 @@
                 <div class="collapse navbar-collapse" id="navbarToggle">
                   <div class="navbar-nav mr-auto">
                     <a class="nav-item nav-link" href="{% url 'draft-home' %}">Home</a>
-                      <form method="POST" class="input-group" novalidate>
-                        {%csrf_token %}
-                        <input type="text" required placeholder="League ID" name="leagueId" value="">
-                        <input type="hidden" name="next" value="{{ request.path }}">
-                        <button type="submit" class="nav-item nav-link nav" formaction="/league/">Find League</button>
-                      </form>
+                    <!--My Leagues Dropdown-->
+                    <div class="dropdown mr-2 nav-item">
+                      <button class="dropbtn dropdown-toggle"> My Leagues</span></button>
+                      {% if user.is_authenticated %}
+                        <div class="dropdown-content">
+                          {% for league in user.league_set.all %}
+                            <a href="/draft/{{league.leagueId}}/">{{league.leagueId}}</a>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>
+                    <!--League Search Bar-->
+                    <form method="POST" class="input-group" novalidate>
+                      {%csrf_token %}
+                      <input type="search"  results="0" required placeholder="League ID" name="leagueId" value="">
+                      <input type="hidden" name="next" value="{{ request.path }}">
+                      <button type="submit" class="nav-item nav-link nav" formaction="/league/"><i class="fa fa-search"></i> Find League</button>
+                    </form>
                     </div>
                   <!-- Navbar Right Side -->
                   <div class="navbar-nav">
@@ -47,6 +60,7 @@
               </div>
             </nav>
         </header>
+        <!--Bootstrap Messages-->
         <div class="container">
           {% if messages %}
             {% for message in messages%}
@@ -56,6 +70,7 @@
             {% endfor %}
           {% endif %}
           <div class="col-md-8">
+            <!--Content block for children templates-->
             {% block content %}{% endblock %}
           </div>
         </div>

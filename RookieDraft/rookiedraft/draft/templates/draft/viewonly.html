@@ -1,24 +1,13 @@
 {% extends "draft/base.html" %}
 {% block content%}
+    <!--View-Only league page-->
     <div class="container">
+        <!--Draft Table-->
         <table>
             <tr>
-                <!---Form to select Draft Order-->
-                <form method="POST" id="draft-order">
-                    {%csrf_token %}
-                    {% for team in order%}
-                        <th><select name="team{{team.position}}">
-                            {% for name in names %} 
-                                {% if name == team.name %}
-                                    <option selected>{{name}}</option>
-                                {% else %}
-                                    <option>{{name}}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select></th>
-                    {% endfor %}
-                </form>
-            <!--Draft Table-->
+                {% for team in order%}
+                <th><textarea class="draft">{{team}}</textarea></th>
+                {% endfor %}
             </tr>
             {% for x in rounds%}
                 <tr>
@@ -27,11 +16,9 @@
                     {% endfor %}
                 </tr>
             {% endfor %}
-        </table>
-        <!--Save new draft order, submit for above form-->
-        <button type="submit" form="draft-order" formaction="/save/{{id}}/">Save Draft Order</button><br><br>
+        </table> <br><br>
 
-        <!--Player ranking table-->
+        <!--Player Ranking Table-->
         <table class="ranking">
             <tr class="ranking">
                 <th class="ranking">Rank</th>
@@ -50,7 +37,6 @@
                         <td class="ranking">{{player.position}}</td>
                         <td class="ranking">{{player.projection}}</td>
                         <td class="ranking">{{player.points}}</td>
-                        <td><button type="button"> Draft</button></td>
                     
                     </tr>
                 {% endif %}

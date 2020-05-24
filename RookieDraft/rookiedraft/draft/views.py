@@ -14,19 +14,22 @@ import pandas as pd
 
 
 def home(request):
-
+    #Send League Registration Form
     form = LeagueRegisterForm(request.user)
     return render(request, 'draft/home.html', {'form': form})
 
-
+#TODO: Add pick and draft information
 @login_required
 def draft(request):
 
+    #Get info from form
     form = LeagueRegisterForm(request.user, request.POST)
     leagueID = request.POST.get('leagueId')
 
+    #Get current user
     user = request.user
 
+    #Validate form
     if form.is_valid():
         try:
             League.objects.get(leagueId=leagueID, user=user).delete()
@@ -34,17 +37,19 @@ def draft(request):
             pass
         temp = form.save(commit=False)
         temp.user = request.user
+        temp.curr_round = 1
+        temp.curr_pick = 1
         temp.save()
     else:
         messages.warning(request, 'Incorrect information entered')
         return redirect('draft-home')
 
-    #Get league from Django database
+    #Get league info from Django database
     league_mod = League.objects.get(leagueId=leagueID, user=user)
-
     num_rounds = form.cleaned_data['rounds']
     num_teams = form.cleaned_data['teams']
 
+    #Call ESPN API
     league = League_espn(league_id = leagueID, year = 2020)
 
     #Collect list of top free agents
@@ -57,25 +62,109 @@ def draft(request):
     #Create list of all owners
     teams = [team.team_name for team in league.teams]
 
+    #Initialize Draft Order
+    for x in range(num_teams):
+        if x+1 == num_teams:
+            league_mod.draft_order += teams[x]
+        else:
+            league_mod.draft_order += teams[x] + ","
+    league_mod.save()
+
+    #Add players to database
     for player in fa:
             player_mod = Player(rank=fa.index(player)+1,name=player.name,team=player.proTeam,
             position=player.position,projection=player.projected_points,points=player.points,drafted=False, league=league_mod)
             player_mod.save()
 
+    #Add teams to database
     for team in teams:
         team_mod = Team(name=team, league=league_mod)
         team_mod.save()
 
+    #Go to display league
     return redirect('/draft/' + str(leagueID))
 
+#TODO: Allow user to enter in traded picks
 @login_required
 def access(request, id):
 
+    #Get League Info
     try:
         league = League.objects.get(leagueId=id, user=request.user)
     except League.DoesNotExist:
         messages.warning(request, 'You do not own a league with this ID')
         return redirect('draft-home')
+    rounds = league.rounds
+    teams = league.teams
+    players = league.player_set.all()
+
+    #Get player and team info
+    fa_dict = [
+    {
+        'rank': player.rank,
+        'name': player.name,
+        'team': player.team,
+        'position': player.position,
+        'projection': player.projection,
+        'points': player.points,
+        'drafted':player.drafted
+    } for player in players]
+
+    users = [team.name for team in league.team_set.all()]
+
+    #Get draft order
+    draft_order = league.draft_order.split(',')
+    draft_order = [{
+        'name': name,
+        'position': index,
+    }for name,index in zip(draft_order,range(teams))]
+
+    return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(rounds),'names':users, 'id':id, 'order':draft_order})
+
+def find(request):
+
+    #Get ID searched
+    leagueId = request.POST.get('leagueId')
+    
+    #Check if ID is valid integer
+    try:
+        leagueId = int(leagueId)
+    except ValueError:
+        messages.warning(request, 'Invalid Value Entered')
+        next = request.POST.get('next','/')
+        return redirect(next)
+
+    return redirect('/league-list/' + str(leagueId))
+
+#TODO: Maybe combine with views.find?
+def leaguelist(request, id):
+    #Find all leagues with searched ID
+    leagues = League.objects.all().filter(leagueId=id)
+    return render(request, 'draft/list.html', {'leagues': leagues})
+
+@login_required
+def saveorder(request, id):
+    #Get League
+    league = League.objects.get(leagueId=id, user=request.user)
+    #Generate new order based on form
+    new_order = ''
+    for x in range(league.teams):
+        name = 'team' + str(x)
+        if x+1 == league.teams:
+            new_order += request.POST.get(name)
+        else:
+            new_order += request.POST.get(name) + ','
+
+    league.draft_order = new_order
+    league.save()
+
+    #Return to draft room
+    return redirect('/draft/' + str(id))
+
+#View-only version of draft room        
+def viewonly(request, id):
+    #TODO: Many leagues possible with same ID, need unique ID
+    league = League.objects.get(leagueId=id)
     rounds = league.rounds
     teams = league.teams
     players = league.player_set.all()
@@ -91,24 +180,7 @@ def access(request, id):
         'drafted':player.drafted
     } for player in players]
 
-    users = [team.name for team in league.team_set.all()]
+    draft_order = league.draft_order.split(',')
 
-    return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(rounds), 'teams':range(teams),'names':users})
-
-@login_required
-def find(request):
-
-    leagueId = request.POST.get('leagueId')
-    try:
-        league = League.objects.get(leagueId=int(leagueId), user=request.user)
-    except ValueError:
-        messages.warning(request, 'Invalid Value Entered')
-        next = request.POST.get('next','/')
-        return redirect(next)
-    except League.DoesNotExist:
-        messages.warning(request, 'You do not own a league with this ID')
-        next = request.POST.get('next','/')
-        return redirect(next)
-
-    return redirect('/draft/' + str(leagueId))
+    return render(request, 'draft/viewonly.html', {'players':fa_dict, 'rounds':range(rounds), 'id':id, 'order':draft_order})
 

@@ -26,6 +26,16 @@ body {
     margin: 0;
   }
   
+  .draft{
+    width: 100px;
+    height: 30px;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    border: none;
+    resize: none;
+  }
+
   .pick{
     width: 100px;
     height: 60px;
@@ -76,3 +86,54 @@ body {
   .account-heading {
     font-size: 2.5rem;
   }
+
+  /* Dropdown Button */
+.dropbtn {
+  background-color: #39b54a;
+  color: #cbd5db;
+  font-size: 16px;
+  border: none;
+  white-space: nowrap;
+  padding: 8px 0;
+}
+
+.dropbtn:hover{
+  color: #ffffff;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+.draft-order-btn{
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}

@@ -2,16 +2,20 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# Create your models here.
+#League
 class League(models.Model):
     leagueId = models.IntegerField()
     teams = models.IntegerField(default=10)
     rounds = models.IntegerField(default=4)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    draft_order = models.CharField(max_length=500)
+    curr_round = models.IntegerField()
+    curr_pick = models.IntegerField()
 
     def __str__(self):
         return 'League ' + str(self.leagueId)
-        
+
+#Free Agents in a league        
 class Player(models.Model):
     rank = models.IntegerField()
     name = models.CharField(max_length=50)
@@ -25,6 +29,7 @@ class Player(models.Model):
     def __str__(self):
         return self.name
 
+#Picks in a league
 class Pick(models.Model):
     round = models.IntegerField()
     number = models.IntegerField()
@@ -34,6 +39,7 @@ class Pick(models.Model):
     def __str__(self):
         return 'Pick ' + str(self.round) + '.' + str(self.number)
 
+#Teams in a league
 class Team(models.Model):
     name = models.CharField(max_length=100)
     league = models.ForeignKey(League, on_delete=models.CASCADE)

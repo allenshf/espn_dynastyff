@@ -83,6 +83,12 @@ body {
   .site-header .navbar-nav .nav-link.active {
     font-weight: 500;
   }
+
+  .profile-img {
+    height: 65px;
+    width: 65px;
+    margin-right: 16px;
+  }
   
   .content-section {
     background: #ffffff;
@@ -93,10 +99,8 @@ body {
   }
   
   .account-img {
-    height: 125px;
-    width: 125px;
-    margin-right: 20px;
-    margin-bottom: 16px;
+    margin-right: 2px;
+    margin-bottom: 2px;
   }
   
   .account-heading {

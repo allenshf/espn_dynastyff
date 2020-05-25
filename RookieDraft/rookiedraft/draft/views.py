@@ -43,7 +43,7 @@ def draft(request):
         except League.DoesNotExist:
             pass
         temp = form.save(commit=False)
-        temp.user = request.user
+        temp.user = user
         temp.unique_key = str(leagueID) + user.username
         temp.curr_round = 1
         temp.curr_pick = 1

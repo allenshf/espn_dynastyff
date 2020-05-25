@@ -34,16 +34,32 @@ body {
     overflow: hidden;
     border: none;
     resize: none;
+    background-color: #fafafa;
   }
 
   .pick{
     width: 100px;
+    max-width: 100px;
     height: 60px;
     padding: 10px;
     border: 1px solid white;
 
     background: #C4C4C4;
     border-radius: 10px;
+  }
+
+  .curr-pick{
+    width: 100px;
+    max-width: 100px;
+    height: 60px;
+    padding: 10px;
+    border: 1px solid white;
+
+    background: #ffd900;
+    border-radius: 10px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   .ff-green {

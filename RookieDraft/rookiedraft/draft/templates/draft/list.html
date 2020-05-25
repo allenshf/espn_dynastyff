@@ -1,7 +1,7 @@
 {% extends "draft/base.html" %}
 {% block content%}
     <!--Search Results-->
-    <div class="content-section">
+    <div class="content-section col-md-8">
         <p class="border-bottom mb-4">Search returned {{leagues.count}} result(s) for "{{id}}"</p>
         <ul class="list-group">
             {% for league in leagues %}

@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'draft.apps.DraftConfig',
+    'draft.apps.DraftConfig',   
     'users.apps.UsersConfig',
     'crispy_forms',
     'django.contrib.admin',
@@ -122,8 +122,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'draft-home'
-
 LOGIN_URL = 'login-req'

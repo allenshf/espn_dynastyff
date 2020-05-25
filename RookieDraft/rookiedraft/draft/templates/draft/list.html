@@ -2,7 +2,7 @@
 {% block content%}
     <!--Search Results-->
     <div class="content-section">
-        <p class="border-bottom mb-4">Search returned {{leagues.count}} result(s)</p>
+        <p class="border-bottom mb-4">Search returned {{leagues.count}} result(s) for "{{id}}"</p>
         <ul class="list-group">
             {% for league in leagues %}
                 <li class="list-group-item list-group-item-light"><a href="/view-only/{{league.leagueId}}/">League ID: {{league.leagueId}}</a><br>

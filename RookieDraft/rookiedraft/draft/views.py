@@ -11,6 +11,7 @@ from .models import Pick, Player, League, Team
 from .forms import LeagueRegisterForm
 from espn_api.football import League as League_espn
 import pandas as pd
+import re
 
 
 def home(request):
@@ -32,7 +33,7 @@ def draft(request):
     except Exception:
         messages.warning(request, 'No Such League with this ID')
         return redirect('draft-home')
-        
+
     #Get current user
     user = request.user
 
@@ -116,7 +117,7 @@ def access(request, id):
         'drafted':player.drafted
     } for player in players]
 
-    users = [team.name for team in league.team_set.all()]
+    users = [re.sub('  ',' ',team.name) for team in league.team_set.all()]
 
     #Get draft order
     draft_order = league.draft_order.split(',')
@@ -128,7 +129,6 @@ def access(request, id):
     return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(rounds),'names':users, 'id':id, 'order':draft_order})
 
 def find(request):
-
     #Get ID searched
     leagueId = request.POST.get('leagueId')
     

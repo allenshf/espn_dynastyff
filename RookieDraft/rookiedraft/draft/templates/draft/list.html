@@ -5,8 +5,9 @@
         <p class="border-bottom mb-4">Search returned {{leagues.count}} result(s) for "{{id}}"</p>
         <ul class="list-group">
             {% for league in leagues %}
-                <li class="list-group-item list-group-item-light"><a href="/view-only/{{league.leagueId}}/">League ID: {{league.leagueId}}</a><br>
-                <small class="muted-text ">Teams: {{league.teams}}, Rounds: {{league.rounds}}</small>
+                <li class="list-group-item list-group-item-light"><a href="/view-only/{{league.unique_key}}/">League ID: {{league.leagueId}}</a><br>
+                <small class="muted-text ">Teams: {{league.teams}}, Rounds: {{league.rounds}}</small> <br>
+                <small class="muted-text ">Date Created: {{league.date_created|date:"F d, Y, g:iA T"}}</small>
                 </li>
             {% endfor %}
         </ul>

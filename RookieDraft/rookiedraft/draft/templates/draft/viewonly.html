@@ -6,13 +6,22 @@
         <table>
             <tr>
                 {% for team in order%}
-                <th><textarea class="draft">{{team}}</textarea></th>
+                <th><textarea class="draft" readonly>{{team}}</textarea></th>
                 {% endfor %}
             </tr>
-            {% for x in rounds%}
+            {% for round in picks%}
                 <tr>
-                    {% for y in order%}
-                    <td class="pick">  </td>
+                    {% for pick in round %}
+                        {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
+                            <td class="curr-pick">On The Clock
+                        {% else %}
+                            <td class="pick">
+                        {% endif %}
+                        {% if pick.player == 'placeholder'%}
+                            </td>
+                        {% else %}
+                            {{pick.player}}</td>
+                        {% endif %}
                     {% endfor %}
                 </tr>
             {% endfor %}

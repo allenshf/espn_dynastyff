@@ -19,7 +19,6 @@ def home(request):
     form = LeagueRegisterForm(request.user)
     return render(request, 'draft/home.html', {'form': form})
 
-#TODO: Add pick and draft information
 @login_required
 def draft(request):
 
@@ -45,6 +44,7 @@ def draft(request):
             pass
         temp = form.save(commit=False)
         temp.user = request.user
+        temp.unique_key = str(leagueID) + user.username
         temp.curr_round = 1
         temp.curr_pick = 1
         temp.save()
@@ -56,8 +56,6 @@ def draft(request):
     league_mod = League.objects.get(leagueId=leagueID, user=user)
     num_rounds = form.cleaned_data['rounds']
     num_teams = form.cleaned_data['teams']
-
-   
 
     #Collect list of top free agents
     fa = league.free_agents(size=150)
@@ -87,6 +85,14 @@ def draft(request):
     for team in teams:
         team_mod = Team(name=team, league=league_mod)
         team_mod.save()
+
+    player = Player(name='placeholder', position='NA',rank=0,team='NA',projection=0,points=0,drafted=False, league=league_mod)
+    player.save()
+    #Add picks to database
+    for x in range(num_rounds):
+        for y in range(num_teams):
+            pick = Pick(round=x+1,number=y+1,league=league_mod, player=player)
+            pick.save()    
 
     #Go to display league
     return redirect('/draft/' + str(leagueID))
@@ -126,7 +132,19 @@ def access(request, id):
         'position': index,
     }for name,index in zip(draft_order,range(teams))]
 
-    return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(rounds),'names':users, 'id':id, 'order':draft_order})
+    picks = []
+    for x in range(rounds):
+        draft_round = []
+        for y in range(teams):
+            draft_round.append({
+                'player': league.pick_set.get(round=x+1,number=y+1).player.name,
+                'postition': league.pick_set.get(round=x+1,number=y+1).player.position,
+                'round': x+1,
+                'number':y+1,
+            })
+        picks.append(draft_round)
+
+    return render(request, 'draft/draftroom.html', {'players':fa_dict, 'rounds':range(rounds),'names':users, 'league':league, 'order':draft_order, 'picks':picks})
 
 def find(request):
     #Get ID searched
@@ -168,9 +186,9 @@ def saveorder(request, id):
     return redirect('/draft/' + str(id))
 
 #View-only version of draft room        
-def viewonly(request, id):
-    #TODO: Many leagues possible with same ID, need unique ID
-    league = League.objects.get(leagueId=id)
+def viewonly(request, key):
+
+    league = League.objects.get(unique_key=key)
     rounds = league.rounds
     teams = league.teams
     players = league.player_set.all()
@@ -188,5 +206,17 @@ def viewonly(request, id):
 
     draft_order = league.draft_order.split(',')
 
-    return render(request, 'draft/viewonly.html', {'players':fa_dict, 'rounds':range(rounds), 'id':id, 'order':draft_order})
+    picks = []
+    for x in range(rounds):
+        draft_round = []
+        for y in range(teams):
+            draft_round.append({
+                'player': league.pick_set.get(round=x+1,number=y+1).player.name,
+                'postition': league.pick_set.get(round=x+1,number=y+1).player.position,
+                'round': x+1,
+                'number':y+1,
+            })
+        picks.append(draft_round)
+
+    return render(request, 'draft/viewonly.html', {'players':fa_dict, 'rounds':range(rounds), 'league':league, 'order':draft_order, 'picks':picks})
 

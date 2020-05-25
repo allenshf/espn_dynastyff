@@ -8,5 +8,5 @@ urlpatterns = [
     path('league/', views.find, name='searched-league'),
     path('league-list/<int:id>/', views.leaguelist, name='league-list'),
     path('save/<int:id>/', views.saveorder, name='save-draft-order'),
-    path('view-only/<int:id>/', views.viewonly, name='view-only'),
+    path('view-only/<str:key>/', views.viewonly, name='view-only'),
 ]

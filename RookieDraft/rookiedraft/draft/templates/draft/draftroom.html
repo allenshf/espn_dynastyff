@@ -20,18 +20,28 @@
                 </form>
             <!--Draft Table-->
             </tr>
-            {% for x in rounds%}
+            {% for round in picks%}
                 <tr>
-                    {% for y in order%}
-                    <td class="pick">  </td>
+                    {% for pick in round %}
+                        {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
+                            <td class="curr-pick">On The Clock
+                        {% else %}
+                            <td class="pick">
+                        {% endif %}
+                        {% if pick.player == 'placeholder'%}
+                            </td>
+                        {% else %}
+                            {{pick.player}}</td>
+                        {% endif %}
                     {% endfor %}
                 </tr>
             {% endfor %}
         </table>
         <!--Save new draft order, submit for above form-->
-        <button type="submit" form="draft-order" formaction="/save/{{id}}/">Save Draft Order</button><br><br>
+        <button type="submit" form="draft-order" formaction="/save/{{league.leagueId}}/">Save Draft Order</button><br><br>
 
         <!--Player ranking table-->
+        <!--TODO: Draft button functionality-->
         <table class="ranking">
             <tr class="ranking">
                 <th class="ranking">Rank</th>
@@ -42,17 +52,19 @@
                 <th class="ranking">2019 Points</th>
             </tr>
             {%for player in players%}
-                {% if not player.drafted %}
-                    <tr class="ranking">
-                        <td class="ranking">{{player.rank}}</td>
-                        <td class="ranking">{{player.name}}</td>
-                        <td class="ranking">{{player.team}}</td>
-                        <td class="ranking">{{player.position}}</td>
-                        <td class="ranking">{{player.projection}}</td>
-                        <td class="ranking">{{player.points}}</td>
-                        <td><button type="button"> Draft</button></td>
-                    
-                    </tr>
+                {% if not player.name == 'placeholder' %}
+                    {% if not player.drafted %}
+                        <tr class="ranking">
+                            <td class="ranking">{{player.rank}}</td>
+                            <td class="ranking">{{player.name}}</td>
+                            <td class="ranking">{{player.team}}</td>
+                            <td class="ranking">{{player.position}}</td>
+                            <td class="ranking">{{player.projection}}</td>
+                            <td class="ranking">{{player.points}}</td>
+                            <td><button type="button"> Draft</button></td>
+                        
+                        </tr>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
         </table>

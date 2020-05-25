@@ -7,7 +7,7 @@ class LeagueRegisterForm(ModelForm):
 
     class Meta:
         model = League
-        exclude = ('user','draft_order','curr_round','curr_pick',)
+        exclude = ('user','draft_order','curr_round','curr_pick','date_created',)
         fields = ['leagueId', 'teams', 'rounds']
         labels = {'leagueId': "League ID", 'teams': "# of Teams", 'rounds': "# of rounds"}
         

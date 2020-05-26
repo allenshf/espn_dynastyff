@@ -37,12 +37,13 @@
                 </tr>
             {% endfor %}
         </table>
-        <!--Save new draft order, submit for above form-->
-        <button type="submit" form="draft-order" formaction="/save/{{league.leagueId}}/">Save Draft Order</button><br><br>
+        
+        <br><br>
 
         <!--Player ranking table-->
         <!--TODO: Draft button functionality-->
-        <table class="ranking">
+        <div class="row justify-content-between">
+        <table class="ranking col-md-8">
             <tr class="ranking">
                 <th class="ranking">Rank</th>
                 <th class="ranking">Name</th>
@@ -61,12 +62,19 @@
                             <td class="ranking">{{player.position}}</td>
                             <td class="ranking">{{player.projection}}</td>
                             <td class="ranking">{{player.points}}</td>
-                            <td><button type="button"> Draft</button></td>
-                        
+                            <td><button type="button" onclick="document.location = '/draft/{{league.leagueId}}/{{player.rank}}/'"> Draft</button></td>
                         </tr>
                     {% endif %}
                 {% endif %}
             {% endfor %}
         </table>
+        <div class="content-section col-md-2" stlye="flex-direction: column;">
+            <p class="border-bottom mb-4">Settings</p>
+            <!--Save new draft order, submit for above form-->
+            <button class="mb-2" type="submit" form="draft-order" formaction="/save/{{league.leagueId}}/">Save Draft Order</button>
+            <button class="mb-2" type="button" formaction="/save/{{league.leagueId}}/">Undo Pick</button>
+            <button class="mb-2" type="button" onclick="document.location = '/reset/{{league.leagueId}}/'">Reset Draft</button>
+        </div>
+        </div>
     </div>
 {% endblock content %}

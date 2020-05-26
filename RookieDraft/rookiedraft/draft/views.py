@@ -21,30 +21,18 @@ def home(request):
 
 @login_required
 def draft(request):
-
     #Get info from form
     form = LeagueRegisterForm(request.user, request.POST)
     leagueID = request.POST.get('leagueId')
 
-    #Call ESPN API
-    try:
-        league = League_espn(league_id = leagueID, year = 2020)
-    except Exception:
-        messages.warning(request, 'No Such League with this ID')
-        return redirect('draft-home')
-
-    #Get current user
-    user = request.user
-
-    #Validate form
     if form.is_valid():
         try:
-            League.objects.get(leagueId=leagueID, user=user).delete()
+            League.objects.get(leagueId=leagueID, user=request.user).delete()
         except League.DoesNotExist:
             pass
         temp = form.save(commit=False)
-        temp.user = user
-        temp.unique_key = str(leagueID) + user.username
+        temp.user = request.user
+        temp.unique_key = str(leagueID) + request.user.username
         temp.curr_round = 1
         temp.curr_pick = 1
         temp.save()
@@ -52,10 +40,20 @@ def draft(request):
         messages.warning(request, 'Incorrect information entered')
         return redirect('draft-home')
 
+    #Call ESPN API
+    try:
+        league = League_espn(league_id = id, year = 2020)
+    except Exception:
+        messages.warning(request, 'No Such League with this ID')
+        return redirect('draft-home')
+
+    #Get current user
+    user = request.user
+
     #Get league info from Django database
-    league_mod = League.objects.get(leagueId=leagueID, user=user)
-    num_rounds = form.cleaned_data['rounds']
-    num_teams = form.cleaned_data['teams']
+    league_mod = League.objects.get(leagueId=id, user=user)
+    num_rounds = league_mod.rounds
+    num_teams = league_mod.teams
 
     #Collect list of top free agents
     fa = league.free_agents(size=150)
@@ -92,10 +90,38 @@ def draft(request):
     for x in range(num_rounds):
         for y in range(num_teams):
             pick = Pick(round=x+1,number=y+1,league=league_mod, player=player)
-            pick.save()    
+            pick.save()
+
+    return redirect('/reset/' + str(leagueID))
+
+@login_required
+def reset(request, id):
+
+    #Get current user
+    user = request.user
+
+    #Get league info from Django database
+    league_mod = League.objects.get(leagueId=id, user=user)
+    num_rounds = league_mod.rounds
+    num_teams = league_mod.teams
+
+    players = league_mod.player_set.all()
+    for player in players:
+        player.drafted = False
+        player.save()
+
+    placeholder = league_mod.player_set.get(name='placeholder')
+    #Add picks to database
+    for pick in league_mod.pick_set.all():
+        pick.player = placeholder
+        pick.save()
+    
+    league_mod.curr_pick = 1
+    league_mod.curr_round = 1
+    league_mod.save()
 
     #Go to display league
-    return redirect('/draft/' + str(leagueID))
+    return redirect('/draft/' + str(id))
 
 #TODO: Allow user to enter in traded picks
 @login_required
@@ -220,3 +246,25 @@ def viewonly(request, key):
 
     return render(request, 'draft/viewonly.html', {'players':fa_dict, 'rounds':range(rounds), 'league':league, 'order':draft_order, 'picks':picks})
 
+#Draft Player Button
+@login_required
+def pickplayer(request, id, rank):
+
+    league = League.objects.get(leagueId=id, user=request.user)
+    if(league.curr_round > league.rounds):
+        messages.warning(request, 'Draft is already complete')
+        return redirect('/draft/' + str(id))
+
+    otc_pick = league.pick_set.get(round=league.curr_round, number=league.curr_pick)
+    picked_player = league.player_set.get(rank=rank)
+    picked_player.drafted = True
+    picked_player.save()
+    otc_pick.player = picked_player
+    otc_pick.save()
+
+    league.curr_pick = league.curr_pick+1
+    if(league.curr_pick > league.teams):
+        league.curr_round = league.curr_round+1
+        league.curr_pick = 1
+    league.save()
+    return redirect('/draft/' + str(id))

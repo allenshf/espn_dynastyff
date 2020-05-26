@@ -1,0 +1,122 @@
+{% extends "draft/base.html" %}
+{% block content%}
+    <div class="container">
+        <table>
+            <tr>
+                <!---Form to select Draft Order-->
+                <form method="POST" id="draft-order">
+                    {%csrf_token %}
+                    {% for team in order%}
+                        <th><select name="team{{team.position}}">
+                            {% for name in names %} 
+                                {% if name == team.name %}
+                                    <option selected>{{name}}</option>
+                                {% else %}
+                                    <option>{{name}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select></th>
+                    {% endfor %}
+                </form>
+            <!--Draft Table-->
+            </tr>
+            {% for round in picks%}
+                <tr>
+                    {% for pick in round %}
+                        {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
+                            <td class="curr-pick">On The Clock
+                        {% else %}
+                            {% if pick.player_first == 'placeholder'%}
+                                {% if pick.owner != '' %}
+                                    <td class="pick empty"><div class="traded border-bottom">&#8250;{{pick.owner}}</div><br><br></td>
+                                {% else %}
+                                    <td class="pick empty"><span class="info float-right">{{pick.round}}.{{pick.number}}</span><br><br><br></td>
+                                {% endif %}
+                            {% else %}
+                                {% if pick.position == 'QB'%}
+                                    <td class="pick qb">
+                                {% elif pick.position == 'RB'%}
+                                    <td class="pick rb">
+                                {% elif pick.position == 'WR'%}
+                                    <td class="pick wr">
+                                {% elif pick.position == 'TE'%}
+                                    <td class="pick te">
+                                {% elif pick.position == 'D/ST'%}
+                                    <td class="pick dst">
+                                {% elif pick.position == 'K'%}
+                                    <td class="pick k">
+                                {% endif %}
+                                {% if pick.owner != '' %}
+                                    <div class="traded border-bottom">&#8250;{{pick.owner}}</div>
+                                {% else %}
+                                    <div class="info">{{pick.position}} - {{pick.team}} 
+                                        <span class="float-right">{{pick.round}}.{{pick.number}}</span></span></div>    
+                                {% endif %}
+                                {{pick.player_first}}<br>{{pick.player_last}}</td>
+                            {% endif %}
+                        {% endif %}    
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        
+        <br><br>
+
+        <!--Player ranking table-->
+        <!--TODO: Draft button functionality-->
+        <div class="row justify-content-between">
+        <table class="ranking col-md-8">
+            <tr class="ranking">
+                <th class="ranking">Rank</th>
+                <th class="ranking">Name</th>
+                <th class="ranking">Team</th>
+                <th class="ranking">Position</th>
+                <th class="ranking">2020 Projection</th>
+                <th class="ranking">2019 Points</th>
+            </tr>
+            {%for player in players%}
+                {% if not player.name == 'placeholder' %}
+                    {% if not player.drafted %}
+                        <tr class="ranking">
+                            <td class="ranking">{{player.rank}}</td>
+                            <td class="ranking">{{player.name}}</td>
+                            <td class="ranking">{{player.team}}</td>
+                            <td class="ranking">{{player.position}}</td>
+                            <td class="ranking">{{player.projection}}</td>
+                            <td class="ranking">{{player.points}}</td>
+                            <td><button type="button" onclick="document.location = '/draft/{{league.leagueId}}/{{player.rank}}/'"> Draft</button></td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </table>
+        <div class="col-md-3">
+            <div class="content-section">
+                <p class="border-bottom mb-4">Control Panel</p>
+                <!--Save new draft order, submit for above form-->
+                <button class="mb-2" type="submit" form="draft-order" formaction="/save/{{league.leagueId}}/">Save Draft Order</button><br>
+                <button class="mb-2" type="button" onclick="document.location = '/undo/{{league.leagueId}}/'">Undo Pick</button><br>
+                <!--Trade Pick form-->
+                <div class="content-section mb-2">
+                    <p class="border-bottom mb-2">Add Traded Pick</p>
+                    <form method="POST">
+                        {%csrf_token %}
+                        Team:
+                        <select name="team" class="mb-1" required>
+                            <option selected disabled></option>
+                            {% for name in names %}     
+                                <option>{{name}}</option>
+                            {% endfor %}
+                        </select>
+                        Round:
+                        <input class="mb-1" type="number" name="round" min="1" max="{{league.rounds}}" required><br>
+                        Pick:
+                        <input class="mb-1" type="number" name="pick" min="1" max="{{league.teams}}" required><br>
+                        <button type="submit" formaction="/trade/{{league.leagueId}}/">Update Pick</button> 
+                    </form>
+                </div>
+                <button class="mb-2 danger" type="button" onclick="document.location = '/reset/{{league.leagueId}}/'">Reset Draft</button>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

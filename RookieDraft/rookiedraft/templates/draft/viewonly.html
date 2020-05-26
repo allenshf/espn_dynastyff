@@ -1,0 +1,77 @@
+{% extends "draft/base.html" %}
+{% block content%}
+    <!--View-Only league page-->
+    <div class="container">
+        <!--Draft Table-->
+        <table>
+            <tr>
+                {% for team in order%}
+                <th><textarea class="draft" readonly>{{team}}</textarea></th>
+                {% endfor %}
+            </tr>
+            {% for round in picks%}
+                <tr>
+                    {% for pick in round %}
+                    {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
+                    <td class="curr-pick">On The Clock
+                {% else %}
+                    {% if pick.player_first == 'placeholder'%}
+                            {% if pick.owner != '' %}
+                                <td class="pick empty"><div class="traded border-bottom">&#8250;{{pick.owner}}</div><br><br></td>
+                                {% else %}
+                                    <td class="pick empty"><span class="info float-right">{{pick.round}}.{{pick.number}}</span><br><br><br></td>
+                                {% endif %}
+                            {% else %}
+                                {% if pick.position == 'QB'%}
+                                    <td class="pick qb">
+                                {% elif pick.position == 'RB'%}
+                                    <td class="pick rb">
+                                {% elif pick.position == 'WR'%}
+                                    <td class="pick wr">
+                                {% elif pick.position == 'TE'%}
+                                    <td class="pick te">
+                                {% elif pick.position == 'D/ST'%}
+                                    <td class="pick dst">
+                                {% elif pick.position == 'K'%}
+                                    <td class="pick k">
+                                {% endif %}
+                                {% if pick.owner != '' %}
+                                    <div class="traded border-bottom">&#8250;{{pick.owner}}</div>
+                                {% else %}
+                                    <div class="info">{{pick.position}} - {{pick.team}} 
+                                        <span class="float-right">{{pick.round}}.{{pick.number}}</span></span></div>    
+                                {% endif %}
+                                {{pick.player_first}}<br>{{pick.player_last}}</td>
+                            {% endif %}
+                        {% endif %}               
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table> <br><br>
+
+        <!--Player Ranking Table-->
+        <table class="ranking">
+            <tr class="ranking">
+                <th class="ranking">Rank</th>
+                <th class="ranking">Name</th>
+                <th class="ranking">Team</th>
+                <th class="ranking">Position</th>
+                <th class="ranking">2020 Projection</th>
+                <th class="ranking">2019 Points</th>
+            </tr>
+            {%for player in players%}
+                {% if not player.drafted %}
+                    <tr class="ranking">
+                        <td class="ranking">{{player.rank}}</td>
+                        <td class="ranking">{{player.name}}</td>
+                        <td class="ranking">{{player.team}}</td>
+                        <td class="ranking">{{player.position}}</td>
+                        <td class="ranking">{{player.projection}}</td>
+                        <td class="ranking">{{player.points}}</td>
+                    
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+{% endblock content %}

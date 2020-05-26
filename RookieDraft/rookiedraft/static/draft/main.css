@@ -1,0 +1,221 @@
+body {
+    background: #fafafa;
+    color: #333333;
+    margin-top: 5rem;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: #444444;
+  }
+
+  th{
+    text-align: center;
+  }
+
+  select{
+    width:100px;
+  }
+
+  .ranking{
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 10px;
+    }
+    
+  ul {
+    margin: 0;
+  }
+  
+  .draft{
+    width: 100px;
+    height: 30px;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    border: none;
+    resize: none;
+    background-color: #fafafa;
+  }
+
+  .pick{
+    width: 100px;
+    max-width: 100px;
+    height: 80px;
+    max-height: 80px;
+    padding: 10px;
+    border: 1px solid white;
+    font-weight: bold;
+
+    border-radius: 10px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+
+  }
+
+  .traded{
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 0.9;
+  }
+
+  .info
+  {
+    text-align: left;
+    position: relative;
+    top: 0px;
+    right: 0px;
+    font-size: 8px;
+    opacity: 0.5;
+  }
+
+  .curr-pick{
+    width: 100px;
+    max-width: 100px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid white;
+    font-weight: bold;
+
+    background: #ffd900;
+    border-radius: 10px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .empty{
+    background: #C4C4C4;
+  }
+
+  .rb{
+    background-color: #009288;
+    color: white;
+  }
+
+  .wr{
+    background-color: #4781c4;
+    color: white;
+  }
+
+  .te{
+    background-color: #b37c43;
+    color: white;
+  }
+
+  .qb{
+    background-color: #b22052;
+    color: white;
+  }
+
+  .dst{
+    background-color: #022047;
+    color: white;
+  }
+
+  .k{
+    background-color: #8e4dbf;
+    color: white;
+  }
+
+  .ff-green {
+    background-color: #39b54a;
+  }
+
+  .danger{
+    color: red;
+  }
+
+  .nav{
+    margin: 1px;
+    background-color: #39b54a;
+    border: none;
+  }
+  
+  .site-header .navbar-nav .nav-link {
+    color: #cbd5db;
+  }
+  
+  .site-header .navbar-nav .nav-link:hover {
+    color: #ffffff;
+  }
+  
+  .site-header .navbar-nav .nav-link.active {
+    font-weight: 500;
+  }
+
+  .profile-img {
+    height: 65px;
+    width: 65px;
+    margin-right: 16px;
+  }
+  
+  .content-section {
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+  }
+  
+  .account-img {
+    margin-right: 2px;
+    margin-bottom: 2px;
+  }
+  
+  .account-heading {
+    font-size: 2.5rem;
+  }
+
+  /* Dropdown Button */
+.dropbtn {
+  background-color: #39b54a;
+  color: #cbd5db;
+  font-size: 16px;
+  border: none;
+  white-space: nowrap;
+  padding: 8px 0;
+}
+
+.dropbtn:hover{
+  color: #ffffff;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+.draft-order-btn{
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}

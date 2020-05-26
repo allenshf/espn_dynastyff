@@ -39,6 +39,7 @@ class Pick(models.Model):
     number = models.IntegerField()
     player = models.ForeignKey(Player, on_delete=models.DO_NOTHING)
     league = models.ForeignKey(League, on_delete=models.CASCADE)
+    owner = models.CharField(max_length=100)
 
     def __str__(self):
         return 'Pick ' + str(self.round) + '.' + str(self.number)

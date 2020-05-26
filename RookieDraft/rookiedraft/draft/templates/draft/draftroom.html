@@ -26,13 +26,35 @@
                         {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
                             <td class="curr-pick">On The Clock
                         {% else %}
-                            <td class="pick">
-                        {% endif %}
-                        {% if pick.player == 'placeholder'%}
-                            </td>
-                        {% else %}
-                            {{pick.player}}</td>
-                        {% endif %}
+                            {% if pick.player_first == 'placeholder'%}
+                                {% if pick.owner != '' %}
+                                    <td class="pick empty"><span class="traded-pick">{{pick.owner}}</span></td>
+                                {% else %}
+                                    <td class="pick empty"><span class="info float-right">{{pick.round}}.{{pick.number}}</span><br><br><br></td>
+                                {% endif %}
+                            {% else %}
+                                {% if pick.position == 'QB'%}
+                                    <td class="pick qb">
+                                {% elif pick.position == 'RB'%}
+                                    <td class="pick rb">
+                                {% elif pick.position == 'WR'%}
+                                    <td class="pick wr">
+                                {% elif pick.position == 'TE'%}
+                                    <td class="pick te">
+                                {% elif pick.position == 'D/ST'%}
+                                    <td class="pick dst">
+                                {% elif pick.position == 'K'%}
+                                    <td class="pick k">
+                                {% endif %}
+                                {% if pick.owner != '' %}
+                                    <div class="traded border-bottom">&#8250;{{pick.owner}}</div>
+                                {% else %}
+                                    <div class="info">{{pick.position}} - {{pick.team}} 
+                                        <span class="float-right">{{pick.round}}.{{pick.number}}</span></span></div>    
+                                {% endif %}
+                                {{pick.player_first}}<br>{{pick.player_last}}</td>
+                            {% endif %}
+                        {% endif %}    
                     {% endfor %}
                 </tr>
             {% endfor %}
@@ -68,13 +90,32 @@
                 {% endif %}
             {% endfor %}
         </table>
-        <div class="content-section col-md-2" stlye="flex-direction: column;">
-            <p class="border-bottom mb-4">Settings</p>
-            <!--Save new draft order, submit for above form-->
-            <button class="mb-2" type="submit" form="draft-order" formaction="/save/{{league.leagueId}}/">Save Draft Order</button>
-            <button class="mb-2" type="button" formaction="/save/{{league.leagueId}}/">Undo Pick</button>
-            <button class="mb-2" type="button" onclick="document.location = '/reset/{{league.leagueId}}/'">Reset Draft</button>
-        </div>
+        <div class="col-md-3">
+            <div class="content-section">
+                <p class="border-bottom mb-4">Control Panel</p>
+                <!--Save new draft order, submit for above form-->
+                <button class="mb-2" type="submit" form="draft-order" formaction="/save/{{league.leagueId}}/">Save Draft Order</button><br>
+                <button class="mb-2" type="button" onclick="document.location = '/undo/{{league.leagueId}}/'">Undo Pick</button><br>
+                <div class="content-section mb-2">
+                    <p class="border-bottom mb-2">Add Traded Pick</p>
+                    <form method="POST">
+                        {%csrf_token %}
+                        Team:
+                        <select name="team" class="mb-1" required>
+                            <option selected disabled></option>
+                            {% for name in names %}     
+                                <option>{{name}}</option>
+                            {% endfor %}
+                        </select>
+                        Round:
+                        <input class="mb-1" type="number" name="round" min="1" max="{{league.rounds}}" required><br>
+                        Pick:
+                        <input class="mb-1" type="number" name="pick" min="1" max="{{league.teams}}" required><br>
+                        <button type="submit" formaction="/trade/{{league.leagueId}}/">Update Pick</button> 
+                    </form>
+                </div>
+                <button class="mb-2 danger" type="button" onclick="document.location = '/reset/{{league.leagueId}}/'">Reset Draft</button>
+            </div>
         </div>
     </div>
 {% endblock content %}

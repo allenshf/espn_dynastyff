@@ -40,20 +40,45 @@ body {
   .pick{
     width: 100px;
     max-width: 100px;
-    height: 60px;
+    height: 80px;
+    max-height: 80px;
     padding: 10px;
     border: 1px solid white;
+    font-weight: bold;
 
-    background: #C4C4C4;
     border-radius: 10px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+
+  }
+
+  .traded{
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 0.9;
+  }
+
+  .info
+  {
+    text-align: left;
+    position: relative;
+    top: 0px;
+    right: 0px;
+    font-size: 8px;
+    opacity: 0.5;
   }
 
   .curr-pick{
     width: 100px;
     max-width: 100px;
-    height: 60px;
+    height: 80px;
     padding: 10px;
     border: 1px solid white;
+    font-weight: bold;
 
     background: #ffd900;
     border-radius: 10px;
@@ -62,8 +87,46 @@ body {
     overflow: hidden;
   }
 
+  .empty{
+    background: #C4C4C4;
+  }
+
+  .rb{
+    background-color: #009288;
+    color: white;
+  }
+
+  .wr{
+    background-color: #4781c4;
+    color: white;
+  }
+
+  .te{
+    background-color: #b37c43;
+    color: white;
+  }
+
+  .qb{
+    background-color: #b22052;
+    color: white;
+  }
+
+  .dst{
+    background-color: #022047;
+    color: white;
+  }
+
+  .k{
+    background-color: #8e4dbf;
+    color: white;
+  }
+
   .ff-green {
     background-color: #39b54a;
+  }
+
+  .danger{
+    color: red;
   }
 
   .nav{

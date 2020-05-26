@@ -89,7 +89,7 @@ def draft(request):
     #Add picks to database
     for x in range(num_rounds):
         for y in range(num_teams):
-            pick = Pick(round=x+1,number=y+1,league=league_mod, player=player)
+            pick = Pick(round=x+1,number=y+1,league=league_mod, player=player, owner='')
             pick.save()
 
     return redirect('/reset/' + str(leagueID))
@@ -114,6 +114,7 @@ def reset(request, id):
     #Add picks to database
     for pick in league_mod.pick_set.all():
         pick.player = placeholder
+        pick.owner = ''
         pick.save()
     
     league_mod.curr_pick = 1
@@ -163,10 +164,13 @@ def access(request, id):
         draft_round = []
         for y in range(teams):
             draft_round.append({
-                'player': league.pick_set.get(round=x+1,number=y+1).player.name,
-                'postition': league.pick_set.get(round=x+1,number=y+1).player.position,
+                'player_first': league.pick_set.get(round=x+1,number=y+1).player.name.split(' ',1)[0],
+                'player_last': league.pick_set.get(round=x+1,number=y+1).player.name.split(' ',1)[-1],
+                'position': league.pick_set.get(round=x+1,number=y+1).player.position,
+                'team' : league.pick_set.get(round=x+1,number=y+1).player.team,
                 'round': x+1,
-                'number':y+1,
+                'number': y+1,
+                'owner': league.pick_set.get(round=x+1,number=y+1).owner,
             })
         picks.append(draft_round)
 
@@ -237,12 +241,17 @@ def viewonly(request, key):
         draft_round = []
         for y in range(teams):
             draft_round.append({
-                'player': league.pick_set.get(round=x+1,number=y+1).player.name,
-                'postition': league.pick_set.get(round=x+1,number=y+1).player.position,
+                'player_first': league.pick_set.get(round=x+1,number=y+1).player.name.split(' ',1)[0],
+                'player_last': league.pick_set.get(round=x+1,number=y+1).player.name.split(' ',1)[-1],
+                'position': league.pick_set.get(round=x+1,number=y+1).player.position,
+                'team' : league.pick_set.get(round=x+1,number=y+1).player.team,
                 'round': x+1,
                 'number':y+1,
+                'owner': league.pick_set.get(round=x+1,number=y+1).owner,
+
             })
         picks.append(draft_round)
+        print(picks)
 
     return render(request, 'draft/viewonly.html', {'players':fa_dict, 'rounds':range(rounds), 'league':league, 'order':draft_order, 'picks':picks})
 
@@ -267,4 +276,46 @@ def pickplayer(request, id, rank):
         league.curr_round = league.curr_round+1
         league.curr_pick = 1
     league.save()
+    return redirect('/draft/' + str(id))
+
+@login_required
+def undo(request, id):
+    
+    league = League.objects.get(leagueId=id, user=request.user)
+    if(league.curr_round == 1 and league.curr_pick == 1):
+        messages.warning(request, 'There is no pick to undo')
+        return redirect('/draft/' + str(id))
+    prev_round = league.curr_round
+    prev_pick = league.curr_pick - 1
+    if(prev_pick == 0):
+        prev_round = prev_round - 1
+        prev_pick = league.teams
+
+    pick = league.pick_set.get(round=prev_round,number=prev_pick)
+    player = pick.player
+
+    player.drafted = False
+    player.save()
+    pick.player = league.player_set.get(name='placeholder')
+    pick.save()
+    league.curr_pick = prev_pick
+    league.curr_round = prev_round
+    league.save()
+
+    return redirect('/draft/' + str(id))
+
+@login_required    
+def trade(request, id):
+    league = League.objects.get(leagueId=id, user=request.user)
+    team = request.POST.get('team')
+    round = request.POST.get('round')
+    number = request.POST.get('pick')
+
+    pick = league.pick_set.get(round=round, number=number)
+    draft_order = league.draft_order.split(',')
+    if team == draft_order[int(round)-1]:
+        pick.owner = ''
+    else:
+        pick.owner = team
+    pick.save()
     return redirect('/draft/' + str(id))

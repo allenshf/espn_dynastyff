@@ -12,16 +12,38 @@
             {% for round in picks%}
                 <tr>
                     {% for pick in round %}
-                        {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
-                            <td class="curr-pick">On The Clock
-                        {% else %}
-                            <td class="pick">
-                        {% endif %}
-                        {% if pick.player == 'placeholder'%}
-                            </td>
-                        {% else %}
-                            {{pick.player}}</td>
-                        {% endif %}
+                    {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
+                    <td class="curr-pick">On The Clock
+                {% else %}
+                    {% if pick.player_first == 'placeholder'%}
+                            {% if pick.owner != '' %}
+                                    <td class="pick empty"><span class="traded-pick">{{pick.owner}}</span></td>
+                                {% else %}
+                                    <td class="pick empty"><span class="info float-right">{{pick.round}}.{{pick.number}}</span><br><br><br></td>
+                                {% endif %}
+                            {% else %}
+                                {% if pick.position == 'QB'%}
+                                    <td class="pick qb">
+                                {% elif pick.position == 'RB'%}
+                                    <td class="pick rb">
+                                {% elif pick.position == 'WR'%}
+                                    <td class="pick wr">
+                                {% elif pick.position == 'TE'%}
+                                    <td class="pick te">
+                                {% elif pick.position == 'D/ST'%}
+                                    <td class="pick dst">
+                                {% elif pick.position == 'K'%}
+                                    <td class="pick k">
+                                {% endif %}
+                                {% if pick.owner != '' %}
+                                    <div class="traded border-bottom">&#8250;{{pick.owner}}</div>
+                                {% else %}
+                                    <div class="info">{{pick.position}} - {{pick.team}} 
+                                        <span class="float-right">{{pick.round}}.{{pick.number}}</span></span></div>    
+                                {% endif %}
+                                {{pick.player_first}}<br>{{pick.player_last}}</td>
+                            {% endif %}
+                        {% endif %}               
                     {% endfor %}
                 </tr>
             {% endfor %}

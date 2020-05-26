@@ -11,4 +11,6 @@ urlpatterns = [
     path('save/<int:id>/', views.saveorder, name='save-draft-order'),
     path('view-only/<str:key>/', views.viewonly, name='view-only'),
     path('draft/<int:id>/<int:rank>/', views.pickplayer, name='pick-player'),
+    path('undo/<int:id>/', views.undo, name='undo-pick'),
+    path('trade/<int:id>/', views.trade, name='trade-pick'),
 ]

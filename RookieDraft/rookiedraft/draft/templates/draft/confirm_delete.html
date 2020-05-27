@@ -1,0 +1,11 @@
+{% extends "draft/base.html" %}
+{% block content%}
+    <!--Search Results-->
+    <div class="content-section col-md-8">
+        <h2 class="mb-0">Are you sure you want to delete this league?</h2><br>
+        <div class="text-muted mb-4 border-bottom">You will not be able to recover your league</div>
+        <a class="btn btn-outline-danger" type="button" href="/delete/{{id}}/">Yes, Delete</a>
+        <a class="btn btn-outline-secondary" type="button" href="/">Cancel</a>
+        
+    </div>
+{% endblock content %}

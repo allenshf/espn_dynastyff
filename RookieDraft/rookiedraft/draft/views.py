@@ -25,6 +25,14 @@ def draft(request):
     form = LeagueRegisterForm(request.user, request.POST)
     leagueID = request.POST.get('leagueId')
 
+    #Call ESPN API
+    try:
+        league = League_espn(league_id = leagueID, year = 2020)
+    except Exception:
+        messages.warning(request, 'No Such League with this ID')
+        return redirect('draft-home')
+
+    #Validate League Registration Form
     if form.is_valid():
         try:
             League.objects.get(leagueId=leagueID, user=request.user).delete()
@@ -40,18 +48,11 @@ def draft(request):
         messages.warning(request, 'Incorrect information entered')
         return redirect('draft-home')
 
-    #Call ESPN API
-    try:
-        league = League_espn(league_id = id, year = 2020)
-    except Exception:
-        messages.warning(request, 'No Such League with this ID')
-        return redirect('draft-home')
-
     #Get current user
     user = request.user
 
     #Get league info from Django database
-    league_mod = League.objects.get(leagueId=id, user=user)
+    league_mod = League.objects.get(leagueId=leagueID, user=user)
     num_rounds = league_mod.rounds
     num_teams = league_mod.teams
 
@@ -150,6 +151,7 @@ def access(request, id):
         'drafted':player.drafted
     } for player in players]
 
+    #Remove double spaces from team names
     users = [re.sub('  ',' ',team.name) for team in league.team_set.all()]
 
     #Get draft order
@@ -159,6 +161,7 @@ def access(request, id):
         'position': index,
     }for name,index in zip(draft_order,range(teams))]
 
+    #Dict of picks in draft
     picks = []
     for x in range(rounds):
         draft_round = []
@@ -193,8 +196,8 @@ def find(request):
 #TODO: Maybe combine with views.find?
 def leaguelist(request, id):
     #Find all leagues with searched ID
-    leagues = League.objects.all().filter(leagueId=id)
-    return render(request, 'draft/list.html', {'leagues': leagues, 'id': id})
+    leagues = League.objects.all().filter(leagueId=id).order_by('-date_created')
+    return render(request, 'draft/list.html',{'leagues': leagues,'id': id,})
 
 @login_required
 def saveorder(request, id):
@@ -218,11 +221,13 @@ def saveorder(request, id):
 #View-only version of draft room        
 def viewonly(request, key):
 
+    #Get league info from database
     league = League.objects.get(unique_key=key)
     rounds = league.rounds
     teams = league.teams
     players = league.player_set.all()
 
+    #Free Agent information to pass to template
     fa_dict = [
     {
         'rank': player.rank,
@@ -236,6 +241,7 @@ def viewonly(request, key):
 
     draft_order = league.draft_order.split(',')
 
+    #Pick information to pass to template
     picks = []
     for x in range(rounds):
         draft_round = []
@@ -251,7 +257,6 @@ def viewonly(request, key):
 
             })
         picks.append(draft_round)
-        print(picks)
 
     return render(request, 'draft/viewonly.html', {'players':fa_dict, 'rounds':range(rounds), 'league':league, 'order':draft_order, 'picks':picks})
 
@@ -259,11 +264,14 @@ def viewonly(request, key):
 @login_required
 def pickplayer(request, id, rank):
 
+    #Get league from databse
     league = League.objects.get(leagueId=id, user=request.user)
+    #Check if the draft is over
     if(league.curr_round > league.rounds):
         messages.warning(request, 'Draft is already complete')
         return redirect('/draft/' + str(id))
 
+    #Get the current pick and link it to selected player
     otc_pick = league.pick_set.get(round=league.curr_round, number=league.curr_pick)
     picked_player = league.player_set.get(rank=rank)
     picked_player.drafted = True
@@ -271,6 +279,7 @@ def pickplayer(request, id, rank):
     otc_pick.player = picked_player
     otc_pick.save()
 
+    #Update the current pick with the next pick
     league.curr_pick = league.curr_pick+1
     if(league.curr_pick > league.teams):
         league.curr_round = league.curr_round+1
@@ -281,19 +290,23 @@ def pickplayer(request, id, rank):
 @login_required
 def undo(request, id):
     
+    #Get league from database
     league = League.objects.get(leagueId=id, user=request.user)
+    #Check if there are previous picks to undo
     if(league.curr_round == 1 and league.curr_pick == 1):
         messages.warning(request, 'There is no pick to undo')
         return redirect('/draft/' + str(id))
+
+    #Get previous pick information
     prev_round = league.curr_round
     prev_pick = league.curr_pick - 1
     if(prev_pick == 0):
         prev_round = prev_round - 1
         prev_pick = league.teams
-
     pick = league.pick_set.get(round=prev_round,number=prev_pick)
     player = pick.player
 
+    #Revert pick information to default
     player.drafted = False
     player.save()
     pick.player = league.player_set.get(name='placeholder')
@@ -306,16 +319,40 @@ def undo(request, id):
 
 @login_required    
 def trade(request, id):
+    #Get league from database
     league = League.objects.get(leagueId=id, user=request.user)
     team = request.POST.get('team')
     round = request.POST.get('round')
     number = request.POST.get('pick')
 
+    #Get pick to be traded
     pick = league.pick_set.get(round=round, number=number)
     draft_order = league.draft_order.split(',')
-    if team == draft_order[int(round)-1]:
+    #Check if team being traded is original owner
+    if team == draft_order[int(number)-1]:
         pick.owner = ''
     else:
         pick.owner = team
     pick.save()
     return redirect('/draft/' + str(id))
+
+@login_required
+def delete_confirm(request,id):
+    try:
+        league = League.objects.get(leagueId=id, user=request.user)
+    except League.DoesNotExist:
+        messages.warning(request, "You don't own this league")
+        next = request.POST.get('back')
+        return redirect(next)
+    return render(request, 'draft/confirm_delete.html', {'id':id})
+
+@login_required
+def delete(request, id):
+    try:
+        league = League.objects.get(leagueId=id, user=request.user)
+    except League.DoesNotExist:
+        messages.warning(request, "You don't own this league")
+        return redirect('/')
+    league = League.objects.get(leagueId=id, user=request.user).delete()
+    messages.success(request, "League succesfully deleted")
+    return redirect('/')

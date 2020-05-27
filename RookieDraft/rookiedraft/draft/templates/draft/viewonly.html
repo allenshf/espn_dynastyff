@@ -17,7 +17,7 @@
                 {% else %}
                     {% if pick.player_first == 'placeholder'%}
                             {% if pick.owner != '' %}
-                                    <td class="pick empty"><span class="traded-pick">{{pick.owner}}</span></td>
+                                <td class="pick empty"><div class="traded border-bottom">&#8250;{{pick.owner}}</div><br><br></td>
                                 {% else %}
                                     <td class="pick empty"><span class="info float-right">{{pick.round}}.{{pick.number}}</span><br><br><br></td>
                                 {% endif %}

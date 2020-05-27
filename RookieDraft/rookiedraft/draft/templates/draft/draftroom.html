@@ -28,7 +28,7 @@
                         {% else %}
                             {% if pick.player_first == 'placeholder'%}
                                 {% if pick.owner != '' %}
-                                    <td class="pick empty"><span class="traded-pick">{{pick.owner}}</span></td>
+                                    <td class="pick empty"><div class="traded border-bottom">&#8250;{{pick.owner}}</div><br><br></td>
                                 {% else %}
                                     <td class="pick empty"><span class="info float-right">{{pick.round}}.{{pick.number}}</span><br><br><br></td>
                                 {% endif %}
@@ -65,7 +65,7 @@
         <!--Player ranking table-->
         <!--TODO: Draft button functionality-->
         <div class="row justify-content-between">
-        <table class="ranking col-md-8">
+        <table class="col-md-8">
             <tr class="ranking">
                 <th class="ranking">Rank</th>
                 <th class="ranking">Name</th>
@@ -77,14 +77,14 @@
             {%for player in players%}
                 {% if not player.name == 'placeholder' %}
                     {% if not player.drafted %}
-                        <tr class="ranking">
+                        <tr class>
                             <td class="ranking">{{player.rank}}</td>
                             <td class="ranking">{{player.name}}</td>
                             <td class="ranking">{{player.team}}</td>
                             <td class="ranking">{{player.position}}</td>
                             <td class="ranking">{{player.projection}}</td>
                             <td class="ranking">{{player.points}}</td>
-                            <td><button type="button" onclick="document.location = '/draft/{{league.leagueId}}/{{player.rank}}/'"> Draft</button></td>
+                            <td><button class="btn btn-outline-success ml-2" type="button" onclick="document.location = '/draft/{{league.leagueId}}/{{player.rank}}/'"> Draft</button></td>
                         </tr>
                     {% endif %}
                 {% endif %}
@@ -94,8 +94,9 @@
             <div class="content-section">
                 <p class="border-bottom mb-4">Control Panel</p>
                 <!--Save new draft order, submit for above form-->
-                <button class="mb-2" type="submit" form="draft-order" formaction="/save/{{league.leagueId}}/">Save Draft Order</button><br>
-                <button class="mb-2" type="button" onclick="document.location = '/undo/{{league.leagueId}}/'">Undo Pick</button><br>
+                <button class="mb-2 btn btn-outline-info" type="submit" form="draft-order" formaction="/save/{{league.leagueId}}/">Save Draft Order</button><br>
+                <button class="mb-2 btn btn-outline-info" type="button" onclick="document.location = '/undo/{{league.leagueId}}/'">Undo Pick</button><br>
+                <!--Trade Pick form-->
                 <div class="content-section mb-2">
                     <p class="border-bottom mb-2">Add Traded Pick</p>
                     <form method="POST">
@@ -111,10 +112,16 @@
                         <input class="mb-1" type="number" name="round" min="1" max="{{league.rounds}}" required><br>
                         Pick:
                         <input class="mb-1" type="number" name="pick" min="1" max="{{league.teams}}" required><br>
-                        <button type="submit" formaction="/trade/{{league.leagueId}}/">Update Pick</button> 
+                        <button class="btn btn-outline-info" type="submit" formaction="/trade/{{league.leagueId}}/">Update Pick</button> 
                     </form>
                 </div>
-                <button class="mb-2 danger" type="button" onclick="document.location = '/reset/{{league.leagueId}}/'">Reset Draft</button>
+                <button class="mb-2 btn btn-outline-danger" type="button" onclick="document.location = '/reset/{{league.leagueId}}/'">Reset Draft</button><br>
+                <form type="POST">
+                    {%csrf_token%}
+                    <input type="hidden" name="back" value="{{ request.path }}">
+                    <button class="mb-2 btn btn-outline-danger" type="submit" formaction="/delete/{{league.leagueId}}/confirm">Delete League</button><br>
+                </form>
+                
             </div>
         </div>
     </div>

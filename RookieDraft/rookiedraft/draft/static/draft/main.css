@@ -54,7 +54,6 @@ body {
   }
 
   .traded{
-    color: #fff;
     font-size: 13px;
     font-weight: bold;
     white-space: nowrap;
@@ -123,10 +122,6 @@ body {
 
   .ff-green {
     background-color: #39b54a;
-  }
-
-  .danger{
-    color: red;
   }
 
   .nav{

@@ -13,4 +13,6 @@ urlpatterns = [
     path('draft/<int:id>/<int:rank>/', views.pickplayer, name='pick-player'),
     path('undo/<int:id>/', views.undo, name='undo-pick'),
     path('trade/<int:id>/', views.trade, name='trade-pick'),
+    path('delete/<int:id>/', views.delete, name='delete-league'),
+    path('delete/<int:id>/confirm/', views.delete_confirm, name='delete-confirm'),
 ]

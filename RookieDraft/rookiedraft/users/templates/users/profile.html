@@ -26,10 +26,15 @@
         <div class="content-section">
             <p class="border-bottom mb-4">My Leagues</p>
             {% for league in user.league_set.all%}
-                <li class="list-group-item list-group-item-light"><a href="/draft/{{league.leagueId}}/">League ID: {{league.leagueId}}</a><br>
+                <li class="list-group-item list-group-item-light"><a href="/draft/{{league.leagueId}}/">League ID: {{league.leagueId}}</a>
+                <form type="POST" class="float-right">
+                    {%csrf_token%}
+                    <input type="hidden" name="back" value="{{ request.path }}">
+                    <button class="btn btn-outline-danger" type="submit" formaction="/delete/{{league.leagueId}}/confirm">Delete League</button>
+                </form><br>
                 <small class="muted-text ">Teams: {{league.teams}}, Rounds: {{league.rounds}}</small><br>
                 <small class="muted-text ">Date Created: {{league.date_created|date:"F d, Y, g:iA T"}}</small>
-                </li>
+                </li> 
             {% endfor %}
         </div>
     </div>

@@ -14,9 +14,15 @@ class League(models.Model):
     curr_pick = models.IntegerField()
     date_created = models.DateTimeField(default=timezone.now)
     unique_key = models.CharField(max_length=50, unique=True) #leagueId+username
+    year = models.IntegerField()
 
     def __str__(self):
         return 'League ' + str(self.leagueId)
+
+    def get_year(self):
+        if self.date_created.month < 5:
+            return self.date_created.year-1
+        return self.date_created.year
 
 
 #Free Agents in a league        

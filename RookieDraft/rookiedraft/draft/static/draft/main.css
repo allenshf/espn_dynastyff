@@ -159,6 +159,8 @@ body {
   .account-img {
     margin-right: 2px;
     margin-bottom: 2px;
+    max-width: 300px;
+    max-height: 300px;
   }
   
   .account-heading {

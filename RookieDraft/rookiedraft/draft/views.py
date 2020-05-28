@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.views.generic import ListView
+from django.core.paginator import Paginator
 import requests
 from subprocess import run,PIPE
 import sys
@@ -25,13 +27,6 @@ def draft(request):
     form = LeagueRegisterForm(request.user, request.POST)
     leagueID = request.POST.get('leagueId')
 
-    #Call ESPN API
-    try:
-        league = League_espn(league_id = leagueID, year = 2020)
-    except Exception:
-        messages.warning(request, 'No Such League with this ID')
-        return redirect('draft-home')
-
     #Validate League Registration Form
     if form.is_valid():
         try:
@@ -43,11 +38,19 @@ def draft(request):
         temp.unique_key = str(leagueID) + request.user.username
         temp.curr_round = 1
         temp.curr_pick = 1
-        temp.save()
+        temp.year = League.get_year(temp)
     else:
         messages.warning(request, 'Incorrect information entered')
         return redirect('draft-home')
 
+    #Call ESPN API
+    try:
+        league = League_espn(league_id = leagueID, year = temp.year)
+    except Exception:
+        messages.warning(request, 'No Such League with this ID')
+        return redirect('draft-home')
+
+    temp.save()
     #Get current user
     user = request.user
 
@@ -193,11 +196,21 @@ def find(request):
 
     return redirect('/league-list/' + str(leagueId))
 
-#TODO: Maybe combine with views.find?
-def leaguelist(request, id):
-    #Find all leagues with searched ID
-    leagues = League.objects.all().filter(leagueId=id).order_by('-date_created')
-    return render(request, 'draft/list.html',{'leagues': leagues,'id': id,})
+#TODO: Add option in draft room to set league private so it doesn't show up in this search
+class LeagueListView(ListView):
+    model = League
+    template_name = 'draft/list.html'
+    ordering = ['-date_created']
+    context_object_name = 'context'
+    paginate_by = 5
+    def get_context_data(self, **kwargs):
+        context = super(ListView,self).get_context_data(**kwargs)
+        context['id'] = self.kwargs['id']
+        context['size'] = len(self.get_queryset())
+        return context
+    def get_queryset(self):
+        return League.objects.filter(leagueId=self.kwargs['id'])
+
 
 @login_required
 def saveorder(request, id):

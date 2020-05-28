@@ -1,7 +1,12 @@
 {% extends "draft/base.html" %}
 {% load crispy_forms_tags %}
 {% block content%}
+    <div class="jumbotron" style="text-align: center;">
+        <h1>Welcome</h1>
+        <p>Insert tutorial here.</p>
+    </div>
     <div class="content-section col-md-8">
+        
         <!--Register League Form-->
         <form method="post">
             {%csrf_token %}
@@ -15,8 +20,7 @@
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit" formaction="/draft/">Register League</button> 
-            </div>
-            
+            </div>   
                     
         </form>
     </div>

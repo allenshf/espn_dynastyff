@@ -32,7 +32,7 @@
                     <input type="hidden" name="back" value="{{ request.path }}">
                     <button class="btn btn-outline-danger" type="submit" formaction="/delete/{{league.leagueId}}/confirm">Delete League</button>
                 </form><br>
-                <small class="muted-text ">Teams: {{league.teams}}, Rounds: {{league.rounds}}</small><br>
+                <small class="muted-text ">Teams: {{league.teams}}, Rounds: {{league.rounds}}, Season: {{league.year}}</small><br>
                 <small class="muted-text ">Date Created: {{league.date_created|date:"F d, Y, g:iA T"}}</small>
                 </li> 
             {% endfor %}

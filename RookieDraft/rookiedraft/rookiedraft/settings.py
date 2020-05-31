@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (os.environ.get('DEBUG_VALUE') == 'True')
 
-ALLOWED_HOSTS = ['dynastydraft.herokuapp.com']
+ALLOWED_HOSTS = ['ec2-18-188-172-219.us-east-2.compute.amazonaws.com','dynastydraft.herokuapp.com']
 
 
 # Application definition

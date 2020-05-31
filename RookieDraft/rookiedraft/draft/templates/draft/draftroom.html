@@ -1,7 +1,8 @@
 {% extends "draft/base.html" %}
 {% block content%}
+
     <div class="container">
-        <table class="sortable">
+        <table>
             <tr>
                 <!---Form to select Draft Order-->
                 <form method="POST" id="draft-order">
@@ -61,14 +62,13 @@
         </table>
         
         <br><br>
-
+    </div>
         <!--Player ranking table-->
         <!--TODO: Draft button functionality-->
         <div class="row justify-content-between">
-        <table class="col-md-8 table-hover">
+        <table class="col-md-8 table-hover sortable">
             <tr>
-                <tr class="ranking">
-                <th class="ranking">Rank</th>
+                <th class="ranking">Rank  </th>
                 <th class="ranking">Name</th>
                 <th class="ranking">Team</th>
                 <th class="ranking">Position</th>
@@ -91,6 +91,7 @@
                 {% endif %}
             {% endfor %}
         </table>
+    
         <div class="col-md-3">
             <div class="content-section">
                 <p class="border-bottom mb-4">Control Panel</p>
@@ -124,5 +125,5 @@
                 </form>    
             </div>
         </div>
-    </div>
+    
 {% endblock content %}

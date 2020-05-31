@@ -10,6 +10,10 @@ body {
 
   th{
     text-align: center;
+    white-space: nowrap;
+  }
+  td{
+    white-space: nowrap;
   }
 
   select{
@@ -20,6 +24,7 @@ body {
     border: 1px solid black;
     border-collapse: collapse;
     padding: 10px;
+    font-size: 15px;
     }
     
   ul {
@@ -216,4 +221,8 @@ body {
   display: block;
   margin-left: auto;
   margin-right: 0;
+}
+
+table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
+  content: " \25B4\25BE"   
 }

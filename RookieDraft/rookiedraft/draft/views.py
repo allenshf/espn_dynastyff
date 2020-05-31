@@ -28,6 +28,7 @@ def draft(request):
     leagueID = request.POST.get('leagueId')
 
     #Validate League Registration Form
+    #TODO: Search for year field as well when we try to delete
     if form.is_valid():
         try:
             League.objects.get(leagueId=leagueID, user=request.user).delete()
@@ -88,7 +89,7 @@ def draft(request):
         team_mod = Team(name=team, league=league_mod)
         team_mod.save()
 
-    player = Player(name='placeholder', position='NA',rank=0,team='NA',projection=0,points=0,drafted=False, league=league_mod)
+    player = Player(name='placeholder', position='NA',rank=0,team='NA',projection=0,points=0,drafted=True, league=league_mod)
     player.save()
     #Add picks to database
     for x in range(num_rounds):

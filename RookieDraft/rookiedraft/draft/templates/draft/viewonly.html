@@ -60,16 +60,17 @@
                 <th class="ranking">2019 Points</th>
             </tr>
             {%for player in players%}
-                {% if not player.drafted %}
-                    <tr class="ranking">
-                        <td class="ranking">{{player.rank}}</td>
-                        <td class="ranking">{{player.name}}</td>
-                        <td class="ranking">{{player.team}}</td>
-                        <td class="ranking">{{player.position}}</td>
-                        <td class="ranking">{{player.projection}}</td>
-                        <td class="ranking">{{player.points}}</td>
-                    
-                    </tr>
+                {% if not player.name == 'placeholder' %}
+                    {% if not player.drafted %}
+                        <tr class="ranking">
+                            <td class="ranking">{{player.rank}}</td>
+                            <td class="ranking">{{player.name}}</td>
+                            <td class="ranking">{{player.team}}</td>
+                            <td class="ranking">{{player.position}}</td>
+                            <td class="ranking">{{player.projection}}</td>
+                            <td class="ranking">{{player.points}}</td>     
+                        </tr>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
         </table>

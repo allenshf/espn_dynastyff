@@ -1,7 +1,7 @@
 {% extends "draft/base.html" %}
 {% block content%}
     <div class="container">
-        <table>
+        <table class="sortable">
             <tr>
                 <!---Form to select Draft Order-->
                 <form method="POST" id="draft-order">
@@ -121,8 +121,7 @@
                     {%csrf_token%}
                     <input type="hidden" name="back" value="{{ request.path }}">
                     <button class="mb-2 btn btn-outline-danger" type="submit" formaction="/delete/{{league.leagueId}}/confirm">Delete League</button><br>
-                </form>
-                
+                </form>    
             </div>
         </div>
     </div>

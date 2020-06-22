@@ -25,7 +25,12 @@
                 <tr>
                     {% for pick in round %}
                         {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
-                            <td class="curr-pick">On The Clock
+                            <td class="curr-pick">
+                            {% if pick.owner != '' %}
+                                <div class="traded border-bottom">&#8250;{{pick.owner}}</div>On The Clock<br>
+                            {% else %}
+                                On The Clock
+                            {% endif %}
                         {% else %}
                             {% if pick.player_first == 'placeholder'%}
                                 {% if pick.owner != '' %}
@@ -117,6 +122,7 @@
                         <button class="btn btn-outline-info" type="submit" formaction="/trade/{{league.leagueId}}/">Update Pick</button> 
                     </form>
                 </div>
+                <button class="mb-2 btn btn-outline-info" type="button" onclick="document.location = '/download/{{league.leagueId}}/'">Export League</button>
                 <button class="mb-2 btn btn-outline-danger" type="button" onclick="document.location = '/reset/{{league.leagueId}}/'">Reset Draft</button><br>
                 <form type="POST">
                     {%csrf_token%}

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.generic import ListView
 from django.core.paginator import Paginator
+from django.http import HttpResponse
 import requests
 from subprocess import run,PIPE
 import sys
@@ -14,6 +15,7 @@ from .forms import LeagueRegisterForm
 from espn_api.football import League as League_espn
 import pandas as pd
 import re
+import csv
 
 
 def home(request):
@@ -370,3 +372,37 @@ def delete(request, id):
     league = League.objects.get(leagueId=id, user=request.user).delete()
     messages.success(request, "League succesfully deleted")
     return redirect('/')
+
+@login_required
+def download(request,id):
+    try:
+        league = League.objects.get(leagueId=id, user=request.user)
+    except League.DoesNotExist:
+        messages.warning(request, "You don't own this league")
+        return redirect('/')
+    
+    picks = league.pick_set.all()
+    order = league.draft_order.split(',')
+    result = []
+
+    for x in range(0,len(order)):
+        result.append([order[x]])
+
+    for pick in picks:
+        if pick.player.name == 'placeholder':
+            continue
+        if pick.owner == '':
+            result[pick.number-1].append(pick.player.name)
+        else:
+            result[order.index(pick.owner)].append(pick.player.name)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition']='attachment; filename="results.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Team','Count','Players'])
+    for row in result:
+        row.insert(1, len(row)-1)
+        writer.writerow(row)
+
+    return response

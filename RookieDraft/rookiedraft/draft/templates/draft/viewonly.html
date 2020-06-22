@@ -13,7 +13,12 @@
                 <tr>
                     {% for pick in round %}
                     {% if pick.round == league.curr_round and pick.number == league.curr_pick%}
-                    <td class="curr-pick">On The Clock
+                    <td class="curr-pick">
+                    {% if pick.owner != '' %}
+                        <div class="traded border-bottom">&#8250;{{pick.owner}}</div>On The Clock<br>
+                    {% else %}
+                        On The Clock
+                    {% endif %}
                 {% else %}
                     {% if pick.player_first == 'placeholder'%}
                             {% if pick.owner != '' %}

@@ -16,4 +16,5 @@ urlpatterns = [
     path('trade/<int:id>/', views.trade, name='trade-pick'),
     path('delete/<int:id>/', views.delete, name='delete-league'),
     path('delete/<int:id>/confirm/', views.delete_confirm, name='delete-confirm'),
+    path('download/<int:id>/', views.download, name='draft-download'),
 ]
